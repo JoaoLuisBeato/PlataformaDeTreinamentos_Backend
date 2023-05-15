@@ -25,8 +25,11 @@ def cadastro():
 
     print(email)
     print(password)
+    return 'Cadastro Realizado'
 
-    return 'Chegou a api'
+
+
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -43,11 +46,11 @@ def login():
     if email_res is not None:
         senha_encontrada = email_res[1]
         if senha_encontrada == password:
+
             print("Logado com sucesso")
             return jsonify({'acesso': 'true'})
         else:
             print("Senha incorreta")
-
     else:
         print("Email nao encontrado")
 
