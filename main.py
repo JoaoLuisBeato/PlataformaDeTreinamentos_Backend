@@ -11,7 +11,7 @@ db = mysql.connector.connect(
 app = Flask(__name__)
 
 @app.route('/cadastro', methods=['POST'])
-def hello():
+def cadastro():
     email = request.form['email']
     password = request.form['password']
 
@@ -30,8 +30,41 @@ def hello():
 
 @app.route('/login', methods=['POST'])
 def login():
+
     email = request.form['email']
     password = request.form['password']
+    
+    mycursor = db.cursor()
+
+    sql_command = "SELECT email, senha FROM usuarios Where email = %s"
+    value = (email,)
+    mycursor.execute(sql_command, value)
+    email_res = mycursor.fetchone()
+    if email_res is not None:
+        senha_encontrada = email_res[1]
+        if senha_encontrada == password:
+            print("Logado com sucesso")
+            return jsonify({'acesso': 'true'})
+        else:
+            print("Senha incorreta")
+
+    else:
+        print("Email nao encontrado")
+
+    return jsonify({'acesso': 'false'})
+
+
+
+
+
+@app.route('/teste_tdd', methods=['POST'])
+def teste_tdd():
+
+    #TESTE AUTOMATIZADO
+    #Verefica a existencia de um login
+
+    email = request.json.get('email')
+    password = request.json.get('password')
 
     mycursor = db.cursor()
 
@@ -43,14 +76,9 @@ def login():
         senha_encontrada = email_res[1]
         if senha_encontrada == password:
             print("Logado com sucesso")
-            return jsonify({'acesso': 'True'})
-        else:
-            print("Senha incorreta")
-
+            return jsonify({'acesso': 'true'})
     else:
-        print("Email nao encontrado")
+        return jsonify({'acesso': 'false'})
 
-    return 'x'
 app.run()
-    
 
