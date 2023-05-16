@@ -56,7 +56,7 @@ def login():
         senha_encontrada = email_res[1] #posicao da coluna da tabela do banco de dado
         if senha_encontrada == password:
             print("Logado com sucesso")
-            return jsonify({'acesso': 'true'})
+            return jsonify({'acesso': 'OK'})
         else:
             print("Senha incorreta")
     else:
