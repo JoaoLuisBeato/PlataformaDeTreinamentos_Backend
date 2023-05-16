@@ -188,8 +188,11 @@ def Criar_Teste():
     Resposta_Q: request.json.get('Q_R')
 
 
-    sql_command = "INSERT INTO questoes (nome_teste, codigo_curso, num_questao, q_enunciado, A1, A2, A3, A4, A5, Resp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (Nome_teste, Codigo_curso, num_questao, Questao, Alternativa_1, Alternativa_2, Alternativa_3)
+    sql_command = "INSERT INTO questoes (nome_teste, codigo_curso, num_questao, q_enunciado, A1, A2, A3, Resp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    value = (Nome_teste, Codigo_curso, num_questao, Questao, Alternativa_1, Alternativa_2, Alternativa_3, Resposta_Q)
+    mycursor.execute(sql_command, value)
+    db.commit()
+
     return 0
 
 
