@@ -1,3 +1,6 @@
+# Api da aplicação utilizando a biblioteca Flask em linguagem Python
+# 
+
 from flask import Flask, request, jsonify
 import mysql.connector
 
@@ -20,8 +23,8 @@ def cadastro():
     # Inicialiazação dos parâmetros para o banco de dados
     mycursor = db.cursor()
     # Insere um usuário novo no banco de dados
-    sql_command = "INSERT INTO usuarios (email, senha, tipo_usuario) VALUES (%s, %s, %s)"
-    values = (email, password, 'Aluno')
+    sql_command = "INSERT INTO users (email, senha, tipo_usuario, nome) VALUES (%s, %s, %s, %s)"
+    values = (email, password, 'Aluno', 'name')
     mycursor.execute(sql_command, values)
     # Salvas as alterações feitas no banco de dados
     db.commit()
@@ -46,7 +49,7 @@ def login():
     mycursor = db.cursor()
 
     # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT email, senha FROM usuarios Where email = %s"
+    sql_command = "SELECT email, senha FROM users Where email = %s"
     value = (email,)
     mycursor.execute(sql_command, value)
     email_res = mycursor.fetchone()
@@ -55,8 +58,9 @@ def login():
     if email_res is not None:
         senha_encontrada = email_res[1] #posicao da coluna da tabela do banco de dado
         if senha_encontrada == password:
+            tipo_user = email_res[2]
             print("Logado com sucesso")
-            return jsonify({'acesso': 'OK'})
+            return jsonify({'acesso': 'OK', 'tipo_usuario': tipo_user})
         else:
             print("Senha incorreta")
     else:
