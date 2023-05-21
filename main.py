@@ -156,7 +156,7 @@ def treinamento():
         'Quantidade máxima de alunos': qnt_max,
         'Quantidade atual de alunos': qnt_atual
     }
-
+    
     return jsonify({'Treinamento': treinamento})
 
 
@@ -182,6 +182,10 @@ def entrar_treinamento():
         else: #se ainda há vagas disponíveis
             sql_command = "UPDATE treinamentos where codigo_curso = %s SET qntd_atual = qntd_atual + 1" #incrementa em 1 a quantidade atual no curso desejado
             value = (codigo_treinamento,)
+            mycursor.execute(sql_command, value)
+            db.commit()
+            sql_command = "INSERT into treinamentos_alunos (email, codigo_treinamento, status) VALUES (%s, %s, %s)"
+            value = (email, codigo_treinamento, 'Em andamento')
             mycursor.execute(sql_command, value)
             db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
@@ -247,13 +251,8 @@ def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = 213023
     resp_list = [] #lista com as respostas do aluno
-    gabarito = [] # gabarito
+    email = request.json.get('email')
     mycursor = db.cursor()
-
-
-
-
-
 
     for i in resp_list:
         sql_command = "SELECT %s FROM questoes WHERE id_teste = %d and numero_questao = Questao %d"
@@ -263,12 +262,20 @@ def Corrigir_Teste():
         if res == True:
             respostas_corretas+=1
     if respostas_corretas >= (resp_list.len)/2:
+        sql_command = "UPDATE treinamento_alunos SET status = %s"
+        value = ('Aprovado',)
+        mycursor.execute(sql_command, value)
+        db.commit()
         return jsonify({'status': 'Aprovado'})
+    else:
+        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s"
+        value = ('Reprovado', 'Acertos insuficientes')
+        mycursor.execute(sql_command, value)
+        db.commit()
 
 @app.route('/vaga_emprego', methods=['POST'])
 def vaga_emprego():
 
-    codigo_vaga = request.json.get('codigo_vaga')
     titulo_vaga = request.json.get('titulo_vaga')
     empresa_oferece = request.json.get('empresa_oferece')
     descricao_vaga = request.json.get('descricao_vaga')
@@ -309,19 +316,26 @@ def entrar_vaga_emprego():
 
     return jsonify({'entrar_emprego_status': True})
 
-#@app.route('/Historico_aluno', methods=['POST'])
-#def entrar_vaga_emprego():
-    #mycursor = db.cursor()
-    #sql_command = "SELECT from treinamentos Nome_comercial"
-    #values = (titulo_vaga, email)
+@app.route('/Listar_inscritos_vaga', methods=['POST'])
+def Listar_inscritos_vaga():
+    titulo_vaga = request.json.get('titulo_vaga')
+    mycursor = db.cursor()
+    sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
+    values = (titulo_vaga,)
+    mycursor.execute(sql_command, values)
+    listar_inscritos_vaga = mycursor.fetchall()
+    return jsonify({'listar_inscritos_vaga': listar_inscritos_vaga})
 
 
-
-
-    #return 0
-
-
-
+@app.route('/Historico_aluno', methods=['POST'])
+def historico():
+    email = request.json.get('email')
+    mycursor = db.cursor()
+    sql_command = "SELECT * from treinamentos_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
+    values = (email,)
+    mycursor.execute(sql_command, values)
+    historico = mycursor.fetchall()
+    return jsonify({'Historico_aluno': historico})
 
 app.run()
 
