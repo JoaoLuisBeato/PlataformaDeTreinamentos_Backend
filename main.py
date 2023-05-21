@@ -3,15 +3,28 @@
 
 from flask import Flask, request, jsonify
 import mysql.connector
+import random
 
 db = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="dkv79122",
-  database="usuario"
+    host='containers-us-west-36.railway.app',
+    port='5767',
+    user='root',
+    password='1sxeCKKwjI0iyh1zxjLk',
+    database='railway'
 )
 
 app = Flask(__name__)
+
+class Answers:
+    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
+        self.questao = questao
+        self.pergunta = pergunta
+        self.respostaDaAlternativaA = respostaDaAlternativaA
+        self.alternativaA = alternativaA
+        self.respostaDaAlternativaB = respostaDaAlternativaB
+        self.alternativaB = alternativaB
+        self.respostaDaAlternativaC = respostaDaAlternativaC
+        self.alternativaC = alternativaC
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
@@ -177,87 +190,80 @@ def entrar_treinamento():
     else:
         return 'Quantidade máxima ou mínima nulas' #se for nulo
 
-@app.route('/Criar_Teste', methods=['POST'])
-def Criar_Teste():
+class Answers:
+    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
+        self.questao = questao
+        self.pergunta = pergunta
+        self.respostaDaAlternativaA = respostaDaAlternativaA
+        self.alternativaA = alternativaA
+        self.respostaDaAlternativaB = respostaDaAlternativaB
+        self.alternativaB = alternativaB
+        self.respostaDaAlternativaC = respostaDaAlternativaC
+        self.alternativaC = alternativaC
 
+@app.route('/criar_questao', methods=['POST'])
+def criar_questao():
     mycursor = db.cursor()
-    Nome_teste = request.json.get('nome_teste')
-    Codigo_curso = request.json.get('codigo_curso')
-    num_questao = request.json.get('num_questao')
-    quantidade_questoes = 5
-    quantidade_alternativas = 3
-
-    Questao: request.json.get('Questao')
-    Alternativa_1: request.json.get('Q1_A')
-    Alternativa_2: request.json.get('Q2_A')
-    Alternativa_3: request.json.get('Q3_A')
-    Resposta_Q: request.json.get('Q_R')
-
-
-    sql_command = "INSERT INTO questoes (nome_teste, codigo_curso, num_questao, q_enunciado, A1, A2, A3, Resp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    value = (Nome_teste, Codigo_curso, num_questao, Questao, Alternativa_1, Alternativa_2, Alternativa_3, Resposta_Q)
-    mycursor.execute(sql_command, value)
-    db.commit()
-
-    return jsonify({'status_teste': True})
+    lista_de_objetos = []
+    id_teste = random.randint(1000000, 99000000)
+    
+    # Verifica se a requisição é um JSON válido
+    if request.is_json:
+        data = request.get_json()
+        
+        # Verifica se a chave 'itemsRespostas' existe no JSON
+        if 'itemsRespostas' in data:
+            items_respostas = data['itemsRespostas']
+            
+            # Itera sobre cada objeto em 'itemsRespostas' e cria instâncias de Answers
+            for item in items_respostas:
+                n_questao = item.get('questao')
+                t_pergunta = item.get('pergunta')
+                resposta_a = item.get('respostaDaAlternativaA')
+                alternativa_a = item.get('alternativaA')
+                resposta_b = item.get('respostaDaAlternativaB')
+                alternativa_b = item.get('alternativaB')
+                resposta_c = item.get('respostaDaAlternativaC')
+                alternativa_c = item.get('alternativaC')
+                
+                
+                
+                sql_command = "INSERT INTO questoes (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s)"
+                values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
+                mycursor.execute(sql_command, values)
+                db.commit()
+                
+                resposta = Answers(id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c)
+                lista_de_objetos.append(resposta)
+        
+    # Faça o processamento necessário com a lista de objetos recebida
+    # ...
+    
+    # Retorne uma resposta, se desejar
+    return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 @app.route('/Corrigir_teste', methods=['POST'])
 def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
+    id_teste = 213023
     resp_list = [] #lista com as respostas do aluno
     gabarito = [] # gabarito
     mycursor = db.cursor()
-    #nao esquecer de criar uma tabela pra salvar o historico
-    email = request.json.get('email')
-    nome_teste = request.json.get('nome_teste')
-    cod_curso = request.json.get('codigo_curso')
-    resposta_1 = request.json.get('R1')
-    resposta_2 = request.json.get('R2')
-    resposta_3 = request.json.get('R3')
-    num_questao_1 = request.json.get('nq1')
-    num_questao_2 = request.json.get('nq2')
-    num_questao_3 = request.json.get('nq3')
-
-    resp_list.append(resposta_1, resposta_2, resposta_3)
-
-    # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_1)
-    mycursor.execute(sql_command, value)
-    q1_res = mycursor.fetchone()
-
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_2)
-    mycursor.execute(sql_command, value)
-    q2_res = mycursor.fetchone()
-
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_3)
-    mycursor.execute(sql_command, value)
-    q3_res = mycursor.fetchone()
 
 
-    gabarito.append(q1_res, q2_res, q3_res)
 
-    for i in range(2):
-        if gabarito[i] == resp_list[i]:
+
+
+
+    for i in resp_list:
+        sql_command = "SELECT %s FROM questoes WHERE id_teste = %d and numero_questao = Questao %d"
+        value = (resp_list[i], id_teste, i+1)
+        mycursor.execute(sql_command, value)
+        res = mycursor.fetchone()
+        if res == True:
             respostas_corretas+=1
-    if respostas_corretas >= 2:
-        print("Parabens passou penes")
-        status = 'A'
-        justificativa = 'Numero suficiente de respostas corretas'
-        sql_command = "INSERT into historico (codigo_curso, nome_teste, email, status, nota, justificativa)"
-        value = (cod_curso, nome_teste, email, status, respostas_corretas, justificativa)
-        mycursor.execute(sql_command, value)
-        return jsonify({'resultados_teste': respostas_corretas})
-    else:
-        print("Reprovou penes passou penes")
-        status = 'R'
-        justificativa = 'Numero insuficiente de respostas corretas'
-        sql_command = "INSERT into historico (codigo_curso, nome_teste, email, status, nota, justificativa)"
-        value = (cod_curso, nome_teste, email, status, respostas_corretas, justificativa)
-        mycursor.execute(sql_command, value)
-        return jsonify({'resultados_teste': respostas_corretas})
+    if respostas_corretas >= (resp_list.len)/2:
+        return jsonify({'status': 'Aprovado'})
 
 @app.route('/vaga_emprego', methods=['POST'])
 def vaga_emprego():
