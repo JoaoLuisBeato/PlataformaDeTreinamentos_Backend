@@ -281,9 +281,8 @@ def vaga_emprego():
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
     pre_requisitos = request.form['pre_requisitos']
-    salario_minimo = int(request.form['salario_minimo'])
-    salario_maximo = int(request.form['salario_maximo'])
-    
+    salario_minimo = request.form.get('salario_minimo')
+    salario_maximo = request.form.get('salario_maximo')
 
     print(titulo_vaga)
     print(empresa_oferece)
@@ -293,7 +292,7 @@ def vaga_emprego():
     print(salario_maximo)
 
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %d, %d)"
+    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s, %s)"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
