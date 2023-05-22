@@ -277,12 +277,13 @@ def Corrigir_Teste():
 def vaga_emprego():
 
     ##codigo_vaga = request.json.get('codigo_vaga') <-- ser gerado aqui
-    titulo_vaga = request.json.get('titulo_vaga')
-    empresa_oferece = request.json.get('empresa_oferece')
-    descricao_vaga = request.json.get('descricao_vaga')
-    pre_requisitos = request.json.get('pre_requisitos')
-    salario_minimo = request.json.get('salario_minimo')
-    salario_maximo = request.json.get('salario_maximo')
+    titulo_vaga = request.form['titulo_vaga']
+    empresa_oferece = request.form['empresa_oferece']
+    descricao_vaga = request.form['descricao_vaga']
+    pre_requisitos = request.form['pre_requisitos']
+    salario_minimo = request.form['salario_minimo']
+    salario_maximo = request.form['salario_maximo']
+    
 
     print(titulo_vaga)
     print(empresa_oferece)
