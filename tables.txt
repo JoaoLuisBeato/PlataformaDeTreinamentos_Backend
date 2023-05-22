@@ -1,0 +1,39 @@
+Create table usuarios(
+    email varchar(255),
+    senha varchar(255),
+    tipo_usuario varchar(255),
+    nome varchar(255)
+);
+
+ALTER TABLE usuarios ADD PRIMARY KEY (email);
+
+
+
+Create table treinamentos(
+	Nome_Comercial varchar(255),
+    Codigo_curso varchar(255),
+    Descricao varchar(500),
+    Carga_horaria varchar(100),
+    Inicio_inscricoes varchar(100),
+    Final_inscricoes varchar(100),
+    Inicio_treinamentos varchar(100),
+    Final_treinamentos varchar(100),
+	qntd_min int,
+    qntd_max int,
+    qntd_atual int
+);
+
+ALTER TABLE railway.treinamentos ADD PRIMARY KEY (Codigo_curso);
+
+
+
+Create table vaga_emprego(
+	Titulo_vaga varchar(200),
+    Empresa_oferece varchar(300),
+    Descricao_vaga varchar(500),
+    Pre_requisito varchar(300),
+    Salario_minimo int,
+    Salario_maximo int
+);
+
+
