@@ -208,42 +208,24 @@ class Answers:
 @app.route('/criar_questao', methods=['POST'])
 def criar_questao():
     mycursor = db.cursor()
-    lista_de_objetos = []
     id_teste = random.randint(1000000, 99000000)
-    
-    # Verifica se a requisição é um JSON válido
-    if request.is_json:
-        data = request.form['lista_de_questoes']
-        
-        # Verifica se a chave 'itemsRespostas' existe no JSON
-        if 'itemsRespostas' in data:
-            items_respostas = data['itemsRespostas']
             
-            # Itera sobre cada objeto em 'itemsRespostas' e cria instâncias de Answers
-            for item in items_respostas:
-                n_questao = item.get('questao')
-                t_pergunta = item.get('pergunta')
-                resposta_a = item.get('respostaDaAlternativaA')
-                alternativa_a = item.get('alternativaA')
-                resposta_b = item.get('respostaDaAlternativaB')
-                alternativa_b = item.get('alternativaB')
-                resposta_c = item.get('respostaDaAlternativaC')
-                alternativa_c = item.get('alternativaC')
+    n_questao = request.form['questao']
+    t_pergunta = request.form['pergunta']
+    resposta_a = request.form['respostaDaAlternativaA']
+    alternativa_a = request.form['alternativaA']
+    resposta_b = request.form['respostaDaAlternativaB']
+    alternativa_b = request.form['alternativaB']
+    resposta_c = request.form['respostaDaAlternativaC']
+    alternativa_c = request.form['alternativaC']      
                 
+    sql_command = "INSERT INTO questoes (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
+    mycursor.execute(sql_command, values)
+    db.commit()
                 
-                
-                sql_command = "INSERT INTO questoes (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%d, %s, %s, %s, %s, %s, %s, %s, %s)"
-                values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
-                mycursor.execute(sql_command, values)
-                db.commit()
-                
-                resposta = Answers(id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c)
-                lista_de_objetos.append(resposta)
+    #resposta = {id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c}
         
-    # Faça o processamento necessário com a lista de objetos recebida
-    # ...
-    
-    # Retorne uma resposta, se desejar
     return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 @app.route('/Corrigir_teste', methods=['POST'])
