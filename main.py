@@ -3,15 +3,28 @@
 
 from flask import Flask, request, jsonify
 import mysql.connector
+import random
 
 db = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="dkv79122",
-  database="usuario"
+    host='containers-us-west-115.railway.app',
+    port='7206',
+    user='root',
+    password='K0Ea2j0sUxkpZa9wQhiU',
+    database='railway'
 )
 
 app = Flask(__name__)
+
+class Answers:
+    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
+        self.questao = questao
+        self.pergunta = pergunta
+        self.respostaDaAlternativaA = respostaDaAlternativaA
+        self.alternativaA = alternativaA
+        self.respostaDaAlternativaB = respostaDaAlternativaB
+        self.alternativaB = alternativaB
+        self.respostaDaAlternativaC = respostaDaAlternativaC
+        self.alternativaC = alternativaC
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
@@ -25,7 +38,7 @@ def cadastro():
     # Inicialiazação dos parâmetros para o banco de dados
     mycursor = db.cursor()
     # Insere um usuário novo no banco de dados
-    sql_command = "INSERT INTO users (email, senha, tipo_usuario, nome) VALUES (%s, %s, %s, %s)"
+    sql_command = "INSERT INTO usuarios (email, senha, tipo_usuario, nome) VALUES (%s, %s, %s, %s)"
     values = (email, password, tipo_usuario, nome)
     try:
         mycursor.execute(sql_command, values)
@@ -57,7 +70,7 @@ def login():
     mycursor = db.cursor()
 
     # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT email, senha FROM users Where email = %s"
+    sql_command = "SELECT email, senha FROM usuarios Where email = %s"
     value = (email,)
     mycursor.execute(sql_command, value)
     email_res = mycursor.fetchone()
@@ -112,17 +125,17 @@ def teste_tdd():
     
 @app.route('/criar_treinamento', methods=['POST'])
 def treinamento():
-    nome_comercial = request.json.get('nome_comercial')
-    codigo_curso = request.json.get('codigo_curso')
-    descricao = request.json.get('descricao')
-    carga_horaria = request.json.get('carga_horaria')
-    inicio_inscricoes = request.json.get('inicio_inscricoes')
-    final_inscricoes = request.json.get('final_inscricoes')
-    inicio_treinamentos = request.json.get('inicio_treinamentos')
-    final_treinamentos = request.json.get('final_treinamentos')
-    qnt_min = request.json.get('qnt_min') ##ISSO DAQUI É UM INT %d
-    qnt_max = request.json.get('qnt_max') ##ISSO DAQUI É UM INT %d
-    qnt_atual = request.json.get('qnt_atual') ##ISSO DAQUI É UM INT %d
+    nome_comercial = request.form('nome_comercial')
+    codigo_curso = request.form('codigo_curso')
+    descricao = request.form('descricao')
+    carga_horaria = request.form('carga_horaria')
+    inicio_inscricoes = request.form('inicio_inscricoes')
+    final_inscricoes = request.form('final_inscricoes')
+    inicio_treinamentos = request.form('inicio_treinamentos')
+    final_treinamentos = request.form('final_treinamentos')
+    qnt_min = request.form('qnt_min') ##ISSO DAQUI É UM INT %d
+    qnt_max = request.form('qnt_max') ##ISSO DAQUI É UM INT %d
+    qnt_atual = request.form('qnt_atual') ##ISSO DAQUI É UM INT %d
 
     mycursor = db.cursor()
     sql_command = "INSERT INTO treinamentos (Nome_Comercial, Codigo_curso, Descricao, Carga_horaria, Inicio_inscricoes, Final_inscricoes, Inicio_treinamentos, Final_treinamentos, qntd_min, qntd_max, qntd_atual) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d)"
@@ -143,14 +156,14 @@ def treinamento():
         'Quantidade máxima de alunos': qnt_max,
         'Quantidade atual de alunos': qnt_atual
     }
-
+    
     return jsonify({'Treinamento': treinamento})
 
 
 @app.route('/entrar_treinamento', methods=['POST'])
 def entrar_treinamento():
-    email = request.json.get('email') #pega o email do usuario
-    codigo_treinamento = request.json.get('codigo_curso') #pega o curso desejado
+    email = request.form('email') #pega o email do usuario
+    codigo_treinamento = request.form('codigo_curso') #pega o curso desejado
 
     mycursor = db.cursor()
 
@@ -171,129 +184,120 @@ def entrar_treinamento():
             value = (codigo_treinamento,)
             mycursor.execute(sql_command, value)
             db.commit()
+            sql_command = "INSERT into treinamentos_alunos (email, codigo_treinamento, status) VALUES (%s, %s, %s)"
+            value = (email, codigo_treinamento, 'Em andamento')
+            mycursor.execute(sql_command, value)
+            db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
             return jsonify({'registro_treinamento': True}) #retorna True para o flutter
 
     else:
         return 'Quantidade máxima ou mínima nulas' #se for nulo
 
-@app.route('/Criar_Teste', methods=['POST'])
-def Criar_Teste():
+class Answers:
+    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
+        self.questao = questao
+        self.pergunta = pergunta
+        self.respostaDaAlternativaA = respostaDaAlternativaA
+        self.alternativaA = alternativaA
+        self.respostaDaAlternativaB = respostaDaAlternativaB
+        self.alternativaB = alternativaB
+        self.respostaDaAlternativaC = respostaDaAlternativaC
+        self.alternativaC = alternativaC
 
+@app.route('/criar_questao', methods=['POST'])
+def criar_questao():
     mycursor = db.cursor()
-    Nome_teste = request.json.get('nome_teste')
-    Codigo_curso = request.json.get('codigo_curso')
-    num_questao = request.json.get('num_questao')
-    quantidade_questoes = 5
-    quantidade_alternativas = 3
-
-    Questao: request.json.get('Questao')
-    Alternativa_1: request.json.get('Q1_A')
-    Alternativa_2: request.json.get('Q2_A')
-    Alternativa_3: request.json.get('Q3_A')
-    Resposta_Q: request.json.get('Q_R')
-
-
-    sql_command = "INSERT INTO questoes (nome_teste, codigo_curso, num_questao, q_enunciado, A1, A2, A3, Resp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    value = (Nome_teste, Codigo_curso, num_questao, Questao, Alternativa_1, Alternativa_2, Alternativa_3, Resposta_Q)
-    mycursor.execute(sql_command, value)
+    id_teste = random.randint(1000000, 99000000)
+            
+    n_questao = request.form['questao']
+    t_pergunta = request.form['pergunta']
+    resposta_a = request.form['respostaDaAlternativaA']
+    alternativa_a = request.form['alternativaA']
+    resposta_b = request.form['respostaDaAlternativaB']
+    alternativa_b = request.form['alternativaB']
+    resposta_c = request.form['respostaDaAlternativaC']
+    alternativa_c = request.form['alternativaC']      
+                
+    sql_command = "INSERT INTO questoes (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
+    mycursor.execute(sql_command, values)
     db.commit()
-
-    return jsonify({'status_teste': True})
+                
+    #resposta = {id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c}
+        
+    return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 @app.route('/Corrigir_teste', methods=['POST'])
 def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
+    id_teste = 213023
     resp_list = [] #lista com as respostas do aluno
-    gabarito = [] # gabarito
+    email = request.form('email')
     mycursor = db.cursor()
-    #nao esquecer de criar uma tabela pra salvar o historico
-    email = request.json.get('email')
-    nome_teste = request.json.get('nome_teste')
-    cod_curso = request.json.get('codigo_curso')
-    resposta_1 = request.json.get('R1')
-    resposta_2 = request.json.get('R2')
-    resposta_3 = request.json.get('R3')
-    num_questao_1 = request.json.get('nq1')
-    num_questao_2 = request.json.get('nq2')
-    num_questao_3 = request.json.get('nq3')
 
-    resp_list.append(resposta_1, resposta_2, resposta_3)
-
-    # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_1)
-    mycursor.execute(sql_command, value)
-    q1_res = mycursor.fetchone()
-
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_2)
-    mycursor.execute(sql_command, value)
-    q2_res = mycursor.fetchone()
-
-    sql_command = "SELECT Resp FROM questoes Where cod_curso = %s and num_questao = %s"
-    value = (cod_curso, num_questao_3)
-    mycursor.execute(sql_command, value)
-    q3_res = mycursor.fetchone()
-
-
-    gabarito.append(q1_res, q2_res, q3_res)
-
-    for i in range(2):
-        if gabarito[i] == resp_list[i]:
+    for i in resp_list:
+        sql_command = "SELECT %s FROM questoes WHERE id_teste = %d and numero_questao = Questao %d"
+        value = (resp_list[i], id_teste, i+1)
+        mycursor.execute(sql_command, value)
+        res = mycursor.fetchone()
+        if res == True:
             respostas_corretas+=1
-    if respostas_corretas >= 2:
-        print("Parabens passou penes")
-        status = 'A'
-        justificativa = 'Numero suficiente de respostas corretas'
-        sql_command = "INSERT into historico (codigo_curso, nome_teste, email, status, nota, justificativa)"
-        value = (cod_curso, nome_teste, email, status, respostas_corretas, justificativa)
+    if respostas_corretas >= (resp_list.len)/2:
+        sql_command = "UPDATE treinamento_alunos SET status = %s"
+        value = ('Aprovado',)
         mycursor.execute(sql_command, value)
-        return jsonify({'resultados_teste': respostas_corretas})
+        db.commit()
+        return jsonify({'status': 'Aprovado'})
     else:
-        print("Reprovou penes passou penes")
-        status = 'R'
-        justificativa = 'Numero insuficiente de respostas corretas'
-        sql_command = "INSERT into historico (codigo_curso, nome_teste, email, status, nota, justificativa)"
-        value = (cod_curso, nome_teste, email, status, respostas_corretas, justificativa)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s"
+        value = ('Reprovado', 'Acertos insuficientes')
         mycursor.execute(sql_command, value)
-        return jsonify({'resultados_teste': respostas_corretas})
+        db.commit()
 
 @app.route('/vaga_emprego', methods=['POST'])
 def vaga_emprego():
 
-    codigo_vaga = request.json.get('codigo_vaga')
-    titulo_vaga = request.json.get('titulo_vaga')
-    empresa_oferece = request.json.get('empresa_oferece')
-    descricao_vaga = request.json.get('descricao_vaga')
-    pre_requisitos = request.json.get('pre_requisitos')
-    salario = request.json.get('salario')
+    ##codigo_vaga = request.json.get('codigo_vaga') <-- ser gerado aqui
+    titulo_vaga = request.form['titulo_vaga']
+    empresa_oferece = request.form['empresa_oferece']
+    descricao_vaga = request.form['descricao_vaga']
+    pre_requisitos = request.form['pre_requisitos']
+    salario_minimo = int(request.form['salario_minimo'])
+    salario_maximo = int(request.form['salario_maximo'])
+    
+
+    print(titulo_vaga)
+    print(empresa_oferece)
+    print(descricao_vaga)
+    print(pre_requisitos)
+    print(salario_minimo)
+    print(salario_maximo)
 
     mycursor = db.cursor()
-    sql_command = "Insert into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario) VALUES (%s, %s, %s, %s,  %d)"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario)
+    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
+    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
-
     vaga_emprego = {
         'titulo_vaga': titulo_vaga,
-        'titulo_vaga': titulo_vaga,
+        'empresa_oferece': empresa_oferece,
         'descricao_vaga': descricao_vaga,
         'pre_requisitos': pre_requisitos,
-        'salario': salario,
+        'salario_minimo': salario_minimo,
+        'salario_maximo': salario_maximo
     }
-
-
     return jsonify({'vaga_emprego': vaga_emprego})
+
 
 
 @app.route('/entrar_vaga_emprego', methods=['POST'])
 def entrar_vaga_emprego():
 
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
-    titulo_vaga = request.json.get('titulo_vaga')
-    email = request.json.get('email')
+    titulo_vaga = request.form('titulo_vaga')
+    email = request.form('email')
 
     mycursor = db.cursor()
     sql_command = "Insert into vaga_emprego_candidatos (titulo_vaga, email) VALUES (%s, %s)"
@@ -303,19 +307,26 @@ def entrar_vaga_emprego():
 
     return jsonify({'entrar_emprego_status': True})
 
-#@app.route('/Historico_aluno', methods=['POST'])
-#def entrar_vaga_emprego():
-    #mycursor = db.cursor()
-    #sql_command = "SELECT from treinamentos Nome_comercial"
-    #values = (titulo_vaga, email)
+@app.route('/Listar_inscritos_vaga', methods=['POST'])
+def Listar_inscritos_vaga():
+    titulo_vaga = request.form('titulo_vaga')
+    mycursor = db.cursor()
+    sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
+    values = (titulo_vaga,)
+    mycursor.execute(sql_command, values)
+    listar_inscritos_vaga = mycursor.fetchall()
+    return jsonify({'listar_inscritos_vaga': listar_inscritos_vaga})
 
 
-
-
-    #return 0
-
-
-
+@app.route('/Historico_aluno', methods=['POST'])
+def historico():
+    email = request.form('email')
+    mycursor = db.cursor()
+    sql_command = "SELECT * from treinamentos_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
+    values = (email,)
+    mycursor.execute(sql_command, values)
+    historico = mycursor.fetchall()
+    return jsonify({'Historico_aluno': historico})
 
 app.run()
 
