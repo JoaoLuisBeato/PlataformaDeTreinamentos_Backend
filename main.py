@@ -284,8 +284,15 @@ def vaga_emprego():
     salario_minimo = request.json.get('salario_minimo')
     salario_maximo = request.json.get('salario_maximo')
 
+    print(titulo_vaga)
+    print(empresa_oferece)
+    print(descricao_vaga)
+    print(pre_requisitos)
+    print(salario_minimo)
+    print(salario_maximo)
+
     mycursor = db.cursor()
-    sql_command = "Insert into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %d, %d)"
+    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %d, %d)"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
