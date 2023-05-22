@@ -281,8 +281,8 @@ def vaga_emprego():
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
     pre_requisitos = request.form['pre_requisitos']
-    salario_minimo = request.form['salario_minimo']
-    salario_maximo = request.form['salario_maximo']
+    salario_minimo = int(request.form['salario_minimo'])
+    salario_maximo = int(request.form['salario_maximo'])
     
 
     print(titulo_vaga)
