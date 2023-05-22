@@ -276,29 +276,30 @@ def Corrigir_Teste():
 @app.route('/vaga_emprego', methods=['POST'])
 def vaga_emprego():
 
+    ##codigo_vaga = request.json.get('codigo_vaga') <-- ser gerado aqui
     titulo_vaga = request.json.get('titulo_vaga')
     empresa_oferece = request.json.get('empresa_oferece')
     descricao_vaga = request.json.get('descricao_vaga')
     pre_requisitos = request.json.get('pre_requisitos')
-    salario = request.json.get('salario')
+    salario_minimo = request.json.get('salario_minimo')
+    salario_maximo = request.json.get('salario_maximo')
 
     mycursor = db.cursor()
-    sql_command = "Insert into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario) VALUES (%s, %s, %s, %s,  %d)"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario)
+    sql_command = "Insert into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %d, %d)"
+    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
-
     vaga_emprego = {
         'titulo_vaga': titulo_vaga,
-        'titulo_vaga': titulo_vaga,
+        'empresa_oferece': empresa_oferece,
         'descricao_vaga': descricao_vaga,
         'pre_requisitos': pre_requisitos,
-        'salario': salario,
+        'salario_minimo': salario_minimo,
+        'salario_maximo': salario_maximo
     }
-
-
     return jsonify({'vaga_emprego': vaga_emprego})
+
 
 
 @app.route('/entrar_vaga_emprego', methods=['POST'])
