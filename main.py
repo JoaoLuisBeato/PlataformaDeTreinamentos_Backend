@@ -6,10 +6,10 @@ import mysql.connector
 import random
 
 db = mysql.connector.connect(
-    host='containers-us-west-36.railway.app',
-    port='5767',
+    host='containers-us-west-115.railway.app',
+    port='7206',
     user='root',
-    password='1sxeCKKwjI0iyh1zxjLk',
+    password='K0Ea2j0sUxkpZa9wQhiU',
     database='railway'
 )
 
@@ -38,7 +38,7 @@ def cadastro():
     # Inicialiazação dos parâmetros para o banco de dados
     mycursor = db.cursor()
     # Insere um usuário novo no banco de dados
-    sql_command = "INSERT INTO users (email, senha, tipo_usuario, nome) VALUES (%s, %s, %s, %s)"
+    sql_command = "INSERT INTO usuarios (email, senha, tipo_usuario, nome) VALUES (%s, %s, %s, %s)"
     values = (email, password, tipo_usuario, nome)
     try:
         mycursor.execute(sql_command, values)
@@ -70,7 +70,7 @@ def login():
     mycursor = db.cursor()
 
     # Procura no banco de dados um usuário com o email que foi passado
-    sql_command = "SELECT email, senha FROM users Where email = %s"
+    sql_command = "SELECT email, senha FROM usuarios Where email = %s"
     value = (email,)
     mycursor.execute(sql_command, value)
     email_res = mycursor.fetchone()
@@ -125,17 +125,17 @@ def teste_tdd():
     
 @app.route('/criar_treinamento', methods=['POST'])
 def treinamento():
-    nome_comercial = request.json.get('nome_comercial')
-    codigo_curso = request.json.get('codigo_curso')
-    descricao = request.json.get('descricao')
-    carga_horaria = request.json.get('carga_horaria')
-    inicio_inscricoes = request.json.get('inicio_inscricoes')
-    final_inscricoes = request.json.get('final_inscricoes')
-    inicio_treinamentos = request.json.get('inicio_treinamentos')
-    final_treinamentos = request.json.get('final_treinamentos')
-    qnt_min = request.json.get('qnt_min') ##ISSO DAQUI É UM INT %d
-    qnt_max = request.json.get('qnt_max') ##ISSO DAQUI É UM INT %d
-    qnt_atual = request.json.get('qnt_atual') ##ISSO DAQUI É UM INT %d
+    nome_comercial = request.form('nome_comercial')
+    codigo_curso = request.form('codigo_curso')
+    descricao = request.form('descricao')
+    carga_horaria = request.form('carga_horaria')
+    inicio_inscricoes = request.form('inicio_inscricoes')
+    final_inscricoes = request.form('final_inscricoes')
+    inicio_treinamentos = request.form('inicio_treinamentos')
+    final_treinamentos = request.form('final_treinamentos')
+    qnt_min = request.form('qnt_min') ##ISSO DAQUI É UM INT %d
+    qnt_max = request.form('qnt_max') ##ISSO DAQUI É UM INT %d
+    qnt_atual = request.form('qnt_atual') ##ISSO DAQUI É UM INT %d
 
     mycursor = db.cursor()
     sql_command = "INSERT INTO treinamentos (Nome_Comercial, Codigo_curso, Descricao, Carga_horaria, Inicio_inscricoes, Final_inscricoes, Inicio_treinamentos, Final_treinamentos, qntd_min, qntd_max, qntd_atual) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d)"
@@ -162,8 +162,8 @@ def treinamento():
 
 @app.route('/entrar_treinamento', methods=['POST'])
 def entrar_treinamento():
-    email = request.json.get('email') #pega o email do usuario
-    codigo_treinamento = request.json.get('codigo_curso') #pega o curso desejado
+    email = request.form('email') #pega o email do usuario
+    codigo_treinamento = request.form('codigo_curso') #pega o curso desejado
 
     mycursor = db.cursor()
 
@@ -213,7 +213,7 @@ def criar_questao():
     
     # Verifica se a requisição é um JSON válido
     if request.is_json:
-        data = request.get_json()
+        data = request.form['lista_de_questoes']
         
         # Verifica se a chave 'itemsRespostas' existe no JSON
         if 'itemsRespostas' in data:
@@ -251,7 +251,7 @@ def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = 213023
     resp_list = [] #lista com as respostas do aluno
-    email = request.json.get('email')
+    email = request.form('email')
     mycursor = db.cursor()
 
     for i in resp_list:
@@ -281,8 +281,9 @@ def vaga_emprego():
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
     pre_requisitos = request.form['pre_requisitos']
-    salario_minimo = request.form.get('salario_minimo')
-    salario_maximo = request.form.get('salario_maximo')
+    salario_minimo = int(request.form['salario_minimo'])
+    salario_maximo = int(request.form['salario_maximo'])
+    
 
     print(titulo_vaga)
     print(empresa_oferece)
@@ -292,7 +293,7 @@ def vaga_emprego():
     print(salario_maximo)
 
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s, %s)"
+    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -313,8 +314,8 @@ def vaga_emprego():
 def entrar_vaga_emprego():
 
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
-    titulo_vaga = request.json.get('titulo_vaga')
-    email = request.json.get('email')
+    titulo_vaga = request.form('titulo_vaga')
+    email = request.form('email')
 
     mycursor = db.cursor()
     sql_command = "Insert into vaga_emprego_candidatos (titulo_vaga, email) VALUES (%s, %s)"
@@ -326,7 +327,7 @@ def entrar_vaga_emprego():
 
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
 def Listar_inscritos_vaga():
-    titulo_vaga = request.json.get('titulo_vaga')
+    titulo_vaga = request.form('titulo_vaga')
     mycursor = db.cursor()
     sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
     values = (titulo_vaga,)
@@ -337,7 +338,7 @@ def Listar_inscritos_vaga():
 
 @app.route('/Historico_aluno', methods=['POST'])
 def historico():
-    email = request.json.get('email')
+    email = request.form('email')
     mycursor = db.cursor()
     sql_command = "SELECT * from treinamentos_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
     values = (email,)
