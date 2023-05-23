@@ -331,8 +331,6 @@ def Update_treinamentos():
     db.commit()
 
 
-
-
     return 'penes'
 
 @app.route('/Delete_treinamentos', methods=['POST'])
