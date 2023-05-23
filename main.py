@@ -1,9 +1,7 @@
 # Api da aplicação utilizando a biblioteca Flask em linguagem Python
-# 
-
 from flask import Flask, request, jsonify
 import mysql.connector
-import os
+
 
 db = mysql.connector.connect(
     host='containers-us-west-115.railway.app',
@@ -15,7 +13,7 @@ db = mysql.connector.connect(
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
+@app.route('/')
 def home():
     return '<h1> Hello World <h1>'
 
@@ -350,7 +348,7 @@ def historico():
 
 
 @app.route('/Mentor_historico', methods=['POST'])
-def historico():
+def mentor_historico():
     email = request.form('email')
     mycursor = db.cursor()
     sql_command = "SELECT * from treinamento_alunos WHERE email = %s ORDER BY id DESC LIMIT 10" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
@@ -397,5 +395,5 @@ def Delete_treinamentos():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()
 
