@@ -151,6 +151,40 @@ def treinamento():
     return jsonify({'Treinamento': treinamento})
 
 
+
+@app.route('/listar_treinamentos', methods=['POST'])
+def Lista_treinamento():
+    mycursor = db.cursor()
+    sql_command = "SELECT * FROM treinamentos"
+    mycursor.execute(sql_command)
+    treinamentos = mycursor.fetchall()
+    
+    tamanho = len(treinamentos)
+
+    data = []
+
+    for i in range(tamanho):
+        treinamento = {
+        'Nome Comercial': treinamentos[i][0],
+        'Código do Curso': treinamentos[i][1],
+        'Descricao': treinamentos[i][2],
+        'Carga Horária': treinamentos[i][3],
+        'Início das incricoes': treinamentos[i][4],
+        'Final das inscricoes': treinamentos[i][5],
+        'Início dos treinamentos': treinamentos[i][6],
+        'Final dos treinamentos': treinamentos[i][7],
+        'Quantidade mínima de alunos': treinamentos[i][8],
+        'Quantidade máxima de alunos': treinamentos[i][9],
+        'Quantidade atual de alunos': treinamentos[i][10]
+        }
+
+        data.append(treinamento)
+        
+    print(data)
+    
+    return jsonify(data)
+
+
 @app.route('/entrar_treinamento', methods=['POST'])
 def entrar_treinamento():
     email = request.form('email') #pega o email do usuario
