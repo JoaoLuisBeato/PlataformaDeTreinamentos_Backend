@@ -15,17 +15,6 @@ db = mysql.connector.connect(
 
 app = Flask(__name__)
 
-class Answers:
-    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
-        self.questao = questao
-        self.pergunta = pergunta
-        self.respostaDaAlternativaA = respostaDaAlternativaA
-        self.alternativaA = alternativaA
-        self.respostaDaAlternativaB = respostaDaAlternativaB
-        self.alternativaB = alternativaB
-        self.respostaDaAlternativaC = respostaDaAlternativaC
-        self.alternativaC = alternativaC
-
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
 
@@ -125,17 +114,20 @@ def teste_tdd():
     
 @app.route('/criar_treinamento', methods=['POST'])
 def treinamento():
-    nome_comercial = request.form('nome_comercial')
-    codigo_curso = request.form('codigo_curso')
-    descricao = request.form('descricao')
-    carga_horaria = request.form('carga_horaria')
-    inicio_inscricoes = request.form('inicio_inscricoes')
-    final_inscricoes = request.form('final_inscricoes')
-    inicio_treinamentos = request.form('inicio_treinamentos')
-    final_treinamentos = request.form('final_treinamentos')
-    qnt_min = request.form('qnt_min') ##ISSO DAQUI É UM INT %d
-    qnt_max = request.form('qnt_max') ##ISSO DAQUI É UM INT %d
+
+    nome_comercial = request.form['nome_comercial'] #nomeComercial
+    codigo_curso = request.form['codigo_curso'] #id_treinamento
+    descricao = request.form['descricao'] #descricao
+    carga_horaria = request.form['carga_horaria'] #cargaHoraria
+    inicio_inscricoes = request.form['inicio_inscricoes'] #dataInicioInscricao
+    final_inscricoes = request.form['final_inscricoes'] #dataFinalInscricao
+    inicio_treinamentos = request.form['inicio_treinamentos'] #dataInicioTreinamento
+    final_treinamentos = request.form['final_treinamentos'] #dataFinalTreinamento
+    qnt_min = request.form['qnt_min'] ##ISSO DAQUI É UM INT %d minCandidatos
+    qnt_max = request.form['qnt_max'] ##ISSO DAQUI É UM INT %d maxCandidatos
     qnt_atual = 0
+
+    print(nome_comercial)
 
     mycursor = db.cursor()
     sql_command = "INSERT INTO treinamentos (Nome_Comercial, Codigo_curso, Descricao, Carga_horaria, Inicio_inscricoes, Final_inscricoes, Inicio_treinamentos, Final_treinamentos, qntd_min, qntd_max, qntd_atual) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
@@ -154,7 +146,7 @@ def treinamento():
         'Final dos treinamentos': final_treinamentos,
         'Quantidade mínima de alunos': qnt_min,
         'Quantidade máxima de alunos': qnt_max,
-        'Quantidade atual de alunos': qnt_atual
+        #'Quantidade atual de alunos': qnt_atual
     }
     
     return jsonify({'Treinamento': treinamento})
@@ -209,7 +201,7 @@ class Answers:
 def criar_questao():
     mycursor = db.cursor()
 
-
+         
     id_teste = request.form['id_treinamento_quiz']
     n_questao = request.form['questao']
     t_pergunta = request.form['pergunta']
