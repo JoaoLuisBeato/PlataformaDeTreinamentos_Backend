@@ -342,11 +342,24 @@ def Listar_inscritos_vaga():
 def historico():
     email = request.form('email')
     mycursor = db.cursor()
-    sql_command = "SELECT * from treinamentos_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
+    sql_command = "SELECT * from treinamento_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
     values = (email,)
     mycursor.execute(sql_command, values)
     historico = mycursor.fetchall()
     return jsonify({'Historico_aluno': historico})
+
+
+@app.route('/Mentor_historico', methods=['POST'])
+def historico():
+    email = request.form('email')
+    mycursor = db.cursor()
+    sql_command = "SELECT * from treinamento_alunos WHERE email = %s ORDER BY id DESC LIMIT 10" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
+    values = (email,)
+    mycursor.execute(sql_command, values)
+    historico = mycursor.fetchall()
+    return jsonify({'Historico_aluno': historico})
+
+
 
 
 
