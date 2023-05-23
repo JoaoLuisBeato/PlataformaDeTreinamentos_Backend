@@ -3,7 +3,6 @@
 
 from flask import Flask, request, jsonify
 import mysql.connector
-import random
 
 db = mysql.connector.connect(
     host='containers-us-west-115.railway.app',
@@ -185,17 +184,6 @@ def entrar_treinamento():
 
     else:
         return 'Quantidade máxima ou mínima nulas' #se for nulo
-
-class Answers:
-    def __init__(self, questao, pergunta, respostaDaAlternativaA, alternativaA, respostaDaAlternativaB, alternativaB, respostaDaAlternativaC, alternativaC):
-        self.questao = questao
-        self.pergunta = pergunta
-        self.respostaDaAlternativaA = respostaDaAlternativaA
-        self.alternativaA = alternativaA
-        self.respostaDaAlternativaB = respostaDaAlternativaB
-        self.alternativaB = alternativaB
-        self.respostaDaAlternativaC = respostaDaAlternativaC
-        self.alternativaC = alternativaC
 
 @app.route('/criar_questao', methods=['POST'])
 def criar_questao():
