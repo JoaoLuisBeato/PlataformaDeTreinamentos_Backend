@@ -3,6 +3,7 @@
 
 from flask import Flask, request, jsonify
 import mysql.connector
+import os
 
 db = mysql.connector.connect(
     host='containers-us-west-115.railway.app',
@@ -13,6 +14,10 @@ db = mysql.connector.connect(
 )
 
 app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def home():
+    return '<h1> Hello World <h1>'
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
@@ -377,5 +382,7 @@ def Delete_treinamentos():
     db.commit()
     return 'penes'
 
-app.run()
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
