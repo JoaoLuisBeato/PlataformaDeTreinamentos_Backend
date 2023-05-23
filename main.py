@@ -3,6 +3,7 @@
 
 from flask import Flask, request, jsonify
 import mysql.connector
+import os
 
 db = mysql.connector.connect(
     host='containers-us-west-115.railway.app',
@@ -13,6 +14,10 @@ db = mysql.connector.connect(
 )
 
 app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def home():
+    return '<h1> Hello World <h1>'
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
@@ -149,6 +154,40 @@ def treinamento():
     }
     
     return jsonify({'Treinamento': treinamento})
+
+
+
+@app.route('/listar_treinamentos', methods=['POST'])
+def Lista_treinamento():
+    mycursor = db.cursor()
+    sql_command = "SELECT * FROM treinamentos"
+    mycursor.execute(sql_command)
+    treinamentos = mycursor.fetchall()
+    
+    tamanho = len(treinamentos)
+
+    data = []
+
+    for i in range(tamanho):
+        treinamento = {
+        'Nome Comercial': treinamentos[i][0],
+        'Código do Curso': treinamentos[i][1],
+        'Descricao': treinamentos[i][2],
+        'Carga Horária': treinamentos[i][3],
+        'Início das incricoes': treinamentos[i][4],
+        'Final das inscricoes': treinamentos[i][5],
+        'Início dos treinamentos': treinamentos[i][6],
+        'Final dos treinamentos': treinamentos[i][7],
+        'Quantidade mínima de alunos': treinamentos[i][8],
+        'Quantidade máxima de alunos': treinamentos[i][9],
+        'Quantidade atual de alunos': treinamentos[i][10]
+        }
+
+        data.append(treinamento)
+        
+    print(data)
+    
+    return jsonify(data)
 
 
 @app.route('/entrar_treinamento', methods=['POST'])
@@ -343,5 +382,7 @@ def Delete_treinamentos():
     db.commit()
     return 'penes'
 
-app.run()
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
