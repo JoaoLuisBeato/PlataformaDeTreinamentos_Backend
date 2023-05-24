@@ -240,10 +240,12 @@ def sair_treinamento():
 
     sql_command = "DELETE FROM treinamento_alunos WHERE email = %s"
     value = (email,)
+    mycursor.execute(sql_command, value)
     db.commit()
 
     sql_command = "UPDATE treinamentos WHERE Codigo_curso = %s SET qntd_atual = qntd_atual -1"
     value = (codigo_treinamento,)
+    mycursor.execute(sql_command, value)
     db.commit()
 
     return jsonify({'status_delete' : 'Deletado com sucesso!'})
@@ -342,12 +344,13 @@ def listar_vagas():
 
     for i in range(tamanho):
         vaga = {
-        'Titulo da vaga': vagas_emprego[i][0],
-        'Empresa': vagas_emprego[i][1],
-        'Descricao':vagas_emprego[i][2],
-        'Pré Requisito': vagas_emprego[i][3],
-        'Salário mínimo': vagas_emprego[i][4],
-        'Salário máximo': vagas_emprego[i][5],
+        'id': vagas_emprego[i][0],
+        'Titulo da vaga': vagas_emprego[i][1],
+        'Empresa': vagas_emprego[i][2],
+        'Descricao':vagas_emprego[i][3],
+        'Pré Requisito': vagas_emprego[i][4],
+        'Salário mínimo': vagas_emprego[i][5],
+        'Salário máximo': vagas_emprego[i][6],
         }
 
         listaVagas.append(vaga)
