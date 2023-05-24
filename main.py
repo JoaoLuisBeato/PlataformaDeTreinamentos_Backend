@@ -422,16 +422,16 @@ def mentor_historico():
 @app.route('/Update_treinamentos', methods=['POST'])
 def Update_treinamentos():
     mycursor = db.cursor()
-    nome_comercial = request.form('nome_comercial')
-    codigo_curso = request.form('codigo_curso')
-    descricao = request.form('descricao')
-    carga_horaria = request.form('carga_horaria')
-    inicio_inscricoes = request.form('inicio_inscricoes')
-    final_inscricoes = request.form('final_inscricoes')
-    inicio_treinamentos = request.form('inicio_treinamentos')
-    final_treinamentos = request.form('final_treinamentos')
-    qnt_min = request.form('qnt_min') ##ISSO DAQUI É UM INT %d
-    qnt_max = request.form('qnt_max') ##ISSO DAQUI É UM INT %d
+    nome_comercial = request.form['nome_comercial']
+    codigo_curso = request.form['codigo_curso']
+    descricao = request.form['descricao']
+    carga_horaria = request.form['carga_horaria']
+    inicio_inscricoes = request.form['inicio_inscricoes']
+    final_inscricoes = request.form['final_inscricoes']
+    inicio_treinamentos = request.form['inicio_treinamentos']
+    final_treinamentos = request.form['final_treinamentos']
+    qnt_min = request.form['qnt_min'] ##ISSO DAQUI É UM INT %d
+    qnt_max = request.form['qnt_max'] ##ISSO DAQUI É UM INT %d
 
     sql_command = "UPDATE treinamentos SET Nome_comercial = %s, Codigo_curso = %s, Descricao = %s, Carga_horaria = %s, Inicio_inscricoes = %s, Final_inscricoes = %s, Inicio_treinamento = %s, Final_treinamento = %s, qnt_min = %s, qnt_max = %s"
     values = (nome_comercial, codigo_curso, descricao, carga_horaria, inicio_inscricoes, final_inscricoes, inicio_treinamentos, final_treinamentos, qnt_min, qnt_max)
@@ -439,7 +439,7 @@ def Update_treinamentos():
     db.commit()
 
 
-    return 'penes'
+    return jsonify({'Update_treinamento': 'Update com sucesso'})
 
 @app.route('/Delete_treinamentos', methods=['POST'])
 def Delete_treinamentos():
