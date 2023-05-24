@@ -222,6 +222,23 @@ def entrar_treinamento():
     else:
         return 'Quantidade máxima ou mínima nulas' #se for nulo
 
+@app.route('/sair_treinamento', methods=['POST'])
+def sair_treinamento():
+    email = request.form['email'] #pega o email do usuario
+    codigo_treinamento = request.form['codigo_curso'] #pega o curso desejado
+    mycursor = db.cursor()
+
+    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s"
+    value = (email,)
+    db.commit()
+
+    sql_command = "UPDATE treinamentos WHERE Codigo_curso = %s SET qntd_atual = qntd_atual -1"
+    value = (codigo_treinamento,)
+    db.commit()
+
+    return jsonify({'status_delete' : 'Deletado com sucesso!'})
+
+
 @app.route('/criar_questao', methods=['POST'])
 def criar_questao():
     mycursor = db.cursor()
@@ -354,7 +371,15 @@ def Listar_inscritos_vaga():
     values = (titulo_vaga,)
     mycursor.execute(sql_command, values)
     listar_inscritos_vaga = mycursor.fetchall()
-    return jsonify({'listar_inscritos_vaga': listar_inscritos_vaga})
+    lista_arr = []
+    tamanho = len(listar_inscritos_vaga)
+    for i in range(tamanho):
+        vaga = {
+        'Titulo da vaga': listar_inscritos_vaga[i][0],
+        'email': listar_inscritos_vaga[i][1],
+        }
+        lista_arr.append(vaga)
+    return jsonify(lista_arr)
 
 
 @app.route('/Historico_aluno', methods=['POST'])
