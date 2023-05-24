@@ -393,7 +393,17 @@ def historico():
     values = (email,)
     mycursor.execute(sql_command, values)
     historico = mycursor.fetchall()
-    return jsonify({'Historico_aluno': historico})
+    historico_list = []
+    tamanho = len(historico)
+    for i in range(tamanho):
+        historico_env = {
+            'email': historico[i][0],
+            'Codigo do curso': historico[i][1],
+            'Status': historico[i][2],
+            'Justificativa': historico[i][3]
+        }
+        historico_list.append(historico_env)
+    return jsonify(historico_list)
 
 
 @app.route('/Mentor_historico', methods=['POST'])
@@ -404,7 +414,18 @@ def mentor_historico():
     values = (email,)
     mycursor.execute(sql_command, values)
     historico = mycursor.fetchall()
-    return jsonify({'Historico_aluno': historico})
+
+    historico_list = []
+    tamanho = len(historico)
+    for i in range(tamanho):
+        historico_env = {
+            'email': historico[i][0],
+            'Codigo do curso': historico[i][1],
+            'Status': historico[i][2],
+            'Justificativa': historico[i][3]
+        }
+        historico_list.append(historico_env)
+    return jsonify(historico)
 
 
 
@@ -428,8 +449,7 @@ def Update_treinamentos():
     mycursor.execute(sql_command, values)
     db.commit()
 
-
-    return 'penes'
+    return jsonify('Atualizado com sucesso!')
 
 @app.route('/Delete_treinamentos', methods=['POST'])
 def Delete_treinamentos():
@@ -439,7 +459,7 @@ def Delete_treinamentos():
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
     db.commit()
-    return 'penes'
+    return jsonify('Deletado com sucesso!')
 
 
 if __name__ == '__main__':
