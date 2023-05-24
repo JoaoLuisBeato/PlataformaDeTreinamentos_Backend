@@ -2,6 +2,8 @@
 from flask import Flask, request, jsonify
 import mysql.connector
 
+#Rotas e parâmetros de acesso ao nosso banco de dados
+#Hospedado na plataforma railway
 
 db = mysql.connector.connect(
     host='containers-us-west-115.railway.app',
@@ -13,9 +15,17 @@ db = mysql.connector.connect(
 
 app = Flask(__name__)
 
+
+#Rota padrão para teste da api
 @app.route('/')
 def home():
     return '<h1> Hello World <h1>'
+
+
+
+
+#Essa Rota tem como função cadastrar o usuario no app
+# e passar as suas informações para o banco de dados
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
@@ -48,7 +58,9 @@ def cadastro():
 
 
 
-
+#Essa Rota tem como função logar o usuario no app
+# e passar as suas informações do banco de dados
+# para o frontend
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -111,8 +123,6 @@ def teste_tdd():
         return jsonify({'acesso': 'false'})
     
 
-
-    
     
 @app.route('/criar_treinamento', methods=['POST'])
 def treinamento():
@@ -301,6 +311,7 @@ def vaga_emprego():
     return jsonify({'vaga_emprego': vaga_emprego})
 
 
+
 @app.route('/listar_vaga_emprego', methods=['POST'])
 def listar_vagas():
     mycursor = db.cursor()
@@ -327,7 +338,6 @@ def listar_vagas():
     print(listaVagas)
     
     return jsonify(listaVagas)
-
 
 
 
