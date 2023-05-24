@@ -283,14 +283,6 @@ def vaga_emprego():
     pre_requisitos = request.form['pre_requisitos']
     salario_minimo = int(request.form['salario_minimo'])
     salario_maximo = int(request.form['salario_maximo'])
-    
-
-    print(titulo_vaga)
-    print(empresa_oferece)
-    print(descricao_vaga)
-    print(pre_requisitos)
-    print(salario_minimo)
-    print(salario_maximo)
 
     mycursor = db.cursor()
     sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
@@ -307,6 +299,35 @@ def vaga_emprego():
         'salario_maximo': salario_maximo
     }
     return jsonify({'vaga_emprego': vaga_emprego})
+
+
+@app.route('/listar_vaga_emprego', methods=['POST'])
+def listar_vagas():
+    mycursor = db.cursor()
+    sql_command = "SELECT * FROM vaga_emprego"
+    mycursor.execute(sql_command)
+    vagas_emprego = mycursor.fetchall()
+    
+    tamanho = len(vagas_emprego)
+
+    listaVagas = []
+
+    for i in range(tamanho):
+        vaga = {
+        'Titulo da vaga': vagas_emprego[i][0],
+        'Empresa': vagas_emprego[i][1],
+        'Descricao':vagas_emprego[i][2],
+        'Pré Requisito': vagas_emprego[i][3],
+        'Salário mínimo': vagas_emprego[i][4],
+        'Salário máximo': vagas_emprego[i][5],
+        }
+
+        listaVagas.append(vaga)
+        
+    print(listaVagas)
+    
+    return jsonify(listaVagas)
+
 
 
 
@@ -356,7 +377,6 @@ def mentor_historico():
     mycursor.execute(sql_command, values)
     historico = mycursor.fetchall()
     return jsonify({'Historico_aluno': historico})
-
 
 
 
