@@ -507,6 +507,7 @@ def Delete_treinamentos():
 
 @app.route('/Update_vaga', methods=['POST'])
 def update_vaga():
+    #Recebe o parâmetro passado do frontend
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -514,18 +515,28 @@ def update_vaga():
     salario_minimo = int(request.form['salario_minimo'])
     salario_maximo = int(request.form['salario_maximo'])
 
+    #Execução dos comandos no banco de dados
+    mycursor = db.cursor()
+    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s"
+    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    mycursor.execute(sql_command, values)
+    db.commit()
+    
+    return jsonify({'Update_vaga': 'Update com sucesso'})
 
 # Essa rota serve para deletar um vaga de emprego
 @app.route('/Delete_vagas', methods=['POST'])
 def Delete_vagas():
 
+    #Execução dos comandos no banco de dados
     mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
     sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
-    return 'penes'
+
+    return jsonify({'Delete_vaga': 'Delete com sucesso'})
 
 
 if __name__ == '__main__':
