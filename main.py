@@ -464,12 +464,23 @@ def Update_treinamentos():
 @app.route('/Delete_treinamentos', methods=['POST'])
 def Delete_treinamentos():
     mycursor = db.cursor()
-    codigo_curso = request.form('codigo_curso')
-    sql_command = "DELETE * FROM treinamentos WHERE Codigo_curso = %s"
+    codigo_curso = request.form['codigo_curso']
+    print(codigo_curso)
+    sql_command = "DELETE FROM treinamentos WHERE Codigo_curso = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
     db.commit()
     return jsonify('Deletado com sucesso!')
+
+@app.route('/Delete_vagas', methods=['POST'])
+def Delete_vagas():
+    mycursor = db.cursor()
+    codigo_vagas = request.form['codigo_vaga']
+    sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+    return 'penes'
 
 
 if __name__ == '__main__':
