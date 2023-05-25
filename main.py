@@ -508,6 +508,7 @@ def Delete_treinamentos():
 @app.route('/Update_vaga', methods=['POST'])
 def update_vaga():
     #Recebe o parâmetro passado do frontend
+    id_vaga = int(request.form['id'])
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -517,8 +518,8 @@ def update_vaga():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id = %s"
+    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo, id_vaga)
     mycursor.execute(sql_command, values)
     db.commit()
     
