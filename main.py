@@ -480,8 +480,8 @@ def Update_treinamentos():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "UPDATE treinamentos SET Nome_comercial = %s, Codigo_curso = %s, Descricao = %s, Carga_horaria = %s, Inicio_inscricoes = %s, Final_inscricoes = %s, Inicio_treinamento = %s, Final_treinamento = %s, qnt_min = %s, qnt_max = %s"
-    values = (nome_comercial, codigo_curso, descricao, carga_horaria, inicio_inscricoes, final_inscricoes, inicio_treinamentos, final_treinamentos, qnt_min, qnt_max)
+    sql_command = "UPDATE treinamentos SET Nome_comercial = %s, Descricao = %s, Carga_horaria = %s, Inicio_inscricoes = %s, Final_inscricoes = %s, Inicio_treinamento = %s, Final_treinamento = %s, qnt_min = %s, qnt_max = %s where Codigo_curso = %s"
+    values = (nome_comercial, descricao, carga_horaria, inicio_inscricoes, final_inscricoes, inicio_treinamentos, final_treinamentos, qnt_min, qnt_max, codigo_curso)
     mycursor.execute(sql_command, values)
     db.commit()
 
