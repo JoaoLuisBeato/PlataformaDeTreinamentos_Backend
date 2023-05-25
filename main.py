@@ -81,7 +81,12 @@ def login():
         if senha_encontrada == password:
 
             print("Logado com sucesso")
-            return jsonify({'acesso': 'OK'})
+            sql_command = "SELECT tipo_usuario from usuarios WHERE email = %s"
+            value = (email,)
+            mycursor.execute(sql_command, value)
+            tipo_user = mycursor.fetchone()
+
+            return jsonify({'acesso': 'OK', 'Tipo_aluno': tipo_user})
         else:
             print("Senha incorreta")
     else:
