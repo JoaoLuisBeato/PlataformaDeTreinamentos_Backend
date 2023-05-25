@@ -92,7 +92,7 @@ def login():
     else:
         print("Email nao encontrado")
 
-    return jsonify({'acesso': 'false'})
+    return jsonify({'acesso': 'false', 'Tipo_aluno': 'Null'})
 
 
 
