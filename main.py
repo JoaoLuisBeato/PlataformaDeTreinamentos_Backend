@@ -200,8 +200,8 @@ def Lista_treinamento():
 
 @app.route('/entrar_treinamento', methods=['POST'])
 def entrar_treinamento():
-    email = request.form('email') #pega o email do usuario
-    codigo_treinamento = request.form('codigo_curso') #pega o curso desejado
+    email = request.form['email'] #pega o email do usuario
+    codigo_treinamento = request.form['codigo_curso'] #pega o curso desejado
 
     mycursor = db.cursor()
 
@@ -365,8 +365,8 @@ def listar_vagas():
 def entrar_vaga_emprego():
 
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
-    titulo_vaga = request.form('titulo_vaga')
-    email = request.form('email')
+    titulo_vaga = request.form['titulo_vaga']
+    email = request.form['email']
 
     mycursor = db.cursor()
     sql_command = "Insert into vaga_emprego_candidatos (titulo_vaga, email) VALUES (%s, %s)"
@@ -378,7 +378,7 @@ def entrar_vaga_emprego():
 
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
 def Listar_inscritos_vaga():
-    titulo_vaga = request.form('titulo_vaga')
+    titulo_vaga = request.form['titulo_vaga']
     mycursor = db.cursor()
     sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
     values = (titulo_vaga,)
@@ -397,7 +397,7 @@ def Listar_inscritos_vaga():
 
 @app.route('/Historico_aluno', methods=['POST'])
 def historico():
-    email = request.form('email')
+    email = request.form['email']
     mycursor = db.cursor()
     sql_command = "SELECT * from treinamento_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
     values = (email,)
@@ -408,7 +408,7 @@ def historico():
 
 @app.route('/Mentor_historico', methods=['POST'])
 def mentor_historico():
-    email = request.form('email')
+    email = request.form['email']
     mycursor = db.cursor()
     sql_command = "SELECT * from treinamento_alunos WHERE email = %s ORDER BY id DESC LIMIT 10" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
     values = (email,)
