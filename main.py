@@ -326,6 +326,7 @@ def Corrigir_Teste():
 def vaga_emprego():
 
     #Recebendo os parâmetros passados do frontend
+    id_vaga = request.form['id_vaga']
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -335,8 +336,8 @@ def vaga_emprego():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    sql_command = "INSERT into vaga_emprego (id_vaga, Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s,  %s, %s)"
+    values = (id_vaga, titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
@@ -523,7 +524,7 @@ def update_vaga():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id = %s"
+    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id_vaga = %s"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo, id_vaga)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -537,7 +538,7 @@ def Delete_vagas():
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
-    sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
+    sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
