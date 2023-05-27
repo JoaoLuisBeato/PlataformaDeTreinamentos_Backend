@@ -411,7 +411,7 @@ def entrar_vaga_emprego():
 @app.route('/sair_vaga_emprego', methods=['POST'])
 def sair_vaga_emprego():
 
-    id_vaga = int(request.form['id_vaga'])
+    id_vaga = request.form['id_vaga']
     email = request.form['email']
     
     mycursor = db.cursor()
@@ -420,15 +420,17 @@ def sair_vaga_emprego():
     mycursor.execute(sql_command, values)
     email_check = mycursor.fetchone()
 
+    print("teste\n\n")
+
     if email_check is not None:
-        mycursor = db.cursor()
-        sql_command = "DELETE FROM usuario_vaga WHERE email = %s and id_vaga %s"
-        values = (email, id_vaga)
+        print("teste\n\n")
+        sql_command = "DELETE FROM usuario_vaga WHERE id_vaga = %s AND email = %s"
+        values = (id_vaga, email)
         mycursor.execute(sql_command, values)
         db.commit()
-        return jsonify({'sair_emprego_status': True})
+        return jsonify({'sair_emprego_status': 'True'})
     else:
-        return jsonify({'sair_emprego_status': False})
+        return jsonify({'sair_emprego_status': 'False'})
 
 
 #Essa rota serve para buscar os usuários inscritos
