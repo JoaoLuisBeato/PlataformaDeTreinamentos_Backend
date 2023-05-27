@@ -64,10 +64,11 @@ CREATE TABLE treinamento_alunos (
   FOREIGN KEY (codigo_treinamento) REFERENCES treinamentos(Codigo_curso)
 );
 
-
 CREATE TABLE usuario_vaga (
   email VARCHAR(255),
   id_vaga INT,
   situacao VARCHAR(255),
-  PRIMARY KEY (email, id_vaga)
 );
+
+ALTER TABLE usuario_vaga
+ADD PRIMARY KEY (email, id_vaga);
