@@ -418,7 +418,7 @@ def sair_vaga_emprego():
     sql_command = "SELECT * FROM usuario_vaga WHERE id_vaga = %s and email = %s"
     values = (id_vaga, email)
     mycursor.execute(sql_command, values)
-    email_check = mycursor.fetchall()
+    email_check = mycursor.fetchone()
 
     if email_check is not None:
         mycursor = db.cursor()
