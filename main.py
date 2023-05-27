@@ -395,7 +395,7 @@ def entrar_vaga_emprego():
     status = "Nao aprovado"
     mycursor = db.cursor()
     sql_command = "Insert into usuario_vaga (email, titulo_vaga, situacao) VALUES (%s, %s, %s)"
-    values = (titulo_vaga, email, status)
+    values = (email, titulo_vaga, status)
     mycursor.execute(sql_command, values)
     db.commit()
 
