@@ -86,7 +86,7 @@ def login():
             mycursor.execute(sql_command, value)
             tipo_user = mycursor.fetchone()
 
-            return jsonify({'acesso': 'OK', 'Tipo_aluno': tipo_user})
+            return jsonify({'acesso': 'OK', 'Tipo_aluno': tipo_user, 'email': email})
         else:
             print("Senha incorreta")
     else:
@@ -228,7 +228,7 @@ def entrar_treinamento():
             print("Curso cheio")
             return jsonify({'registro_treinamento': False})
         else: #se ainda há vagas disponíveis
-            sql_command = "UPDATE treinamentos where Codigo_curso = %s SET qntd_atual = qntd_atual + 1" #incrementa em 1 a quantidade atual no curso desejado
+            sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual + 1 WHERE Codigo_curso = %s" #incrementa em 1 a quantidade atual no curso desejado
             value = (codigo_treinamento,)
             mycursor.execute(sql_command, value)
             db.commit()
@@ -258,7 +258,7 @@ def sair_treinamento():
     db.commit()
     
     #Execução dos comandos no banco de dados
-    sql_command = "UPDATE treinamentos WHERE Codigo_curso = %s SET qntd_atual = qntd_atual -1"
+    sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual -1 WHERE Codigo_curso = %s"
     value = (codigo_treinamento,)
     mycursor.execute(sql_command, value)
     db.commit()
@@ -309,14 +309,14 @@ def Corrigir_Teste():
         if res == True:
             respostas_corretas+=1
     if respostas_corretas >= (resp_list.len)/2:
-        sql_command = "UPDATE treinamento_alunos SET status = %s"
-        value = ('Aprovado',)
+        sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s"
+        value = ('Aprovado', email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
-        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s"
-        value = ('Reprovado', 'Acertos insuficientes')
+        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s WHERE email = %s"
+        value = ('Reprovado', 'Acertos insuficientes', email)
         mycursor.execute(sql_command, value)
         db.commit()
 
@@ -326,7 +326,6 @@ def Corrigir_Teste():
 def vaga_emprego():
 
     #Recebendo os parâmetros passados do frontend
-    id_vaga = request.form['id_vaga']
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -336,8 +335,8 @@ def vaga_emprego():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (id_vaga, Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s,  %s, %s)"
-    values = (id_vaga, titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
+    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
@@ -393,10 +392,10 @@ def entrar_vaga_emprego():
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
     titulo_vaga = request.form['titulo_vaga']
     email = request.form['email']
-
+    status = "Nao aprovado"
     mycursor = db.cursor()
-    sql_command = "Insert into vaga_emprego_candidatos (titulo_vaga, email) VALUES (%s, %s)"
-    values = (titulo_vaga, email)
+    sql_command = "Insert into usuario_vaga (email, titulo_vaga, situacao) VALUES (%s, %s, %s)"
+    values = (titulo_vaga, email, status)
     mycursor.execute(sql_command, values)
     db.commit()
 
@@ -524,7 +523,7 @@ def update_vaga():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id_vaga = %s"
+    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id = %s"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo, id_vaga)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -538,7 +537,7 @@ def Delete_vagas():
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
-    sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
+    sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -582,7 +581,36 @@ def Listar_teste():
         formulario.append(listar_teste)
     
     return jsonify(formulario)
-        
+
+
+@app.route('/Listar_treinamentos_aluno', methods=['POST'])
+def Listar_treinamentos_alunos():
+    mycursor = db.cursor() 
+    email = request.form['email']
+    sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT id_vaga FROM usuario_vaga where email = %s)"
+    value = (email,)
+    mycursor.execute(sql_command, value)
+    res_list = mycursor.fetchall
+    tamanho = len(res_list)
+    lista_res = []
+    for i in range(tamanho):
+        listagem_treinamentos = {
+            'Nome comercial': res_list[i][0],
+            'Codigo do curso': res_list[i][1],
+            'Descricao': res_list[i][2],
+            'Carga Horaria': res_list[i][3],
+            'Inicio das inscricoes': res_list[i][4],
+            'Final das inscricoes': res_list[i][5],
+            'Inicio do treinamento': res_list[i][6],
+            'Final do treinamento': res_list[i][7],
+            'Quantidade minima': res_list[i][8],
+            'Quantidade maxima': res_list[i][9],
+            'Quantidade atual': res_list[i][10]
+        }
+
+        lista_res.append(listagem_treinamentos)
+    return jsonify(lista_res)
+
 if __name__ == '__main__':
     app.run()
 

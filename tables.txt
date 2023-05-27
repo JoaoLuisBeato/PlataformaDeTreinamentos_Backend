@@ -52,3 +52,14 @@ create table questoes(
 );
 
 alter table railway.questoes add primary key(questao);
+
+
+
+CREATE TABLE treinamento_alunos (
+  email VARCHAR(255),
+  codigo_treinamento VARCHAR(255),
+  status VARCHAR(255),
+  PRIMARY KEY (email, codigo_treinamento),
+  FOREIGN KEY (email) REFERENCES usuarios(email),
+  FOREIGN KEY (codigo_treinamento) REFERENCES treinamentos(Codigo_curso)
+);
