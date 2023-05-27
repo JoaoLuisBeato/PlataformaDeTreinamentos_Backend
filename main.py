@@ -388,18 +388,24 @@ def listar_vagas():
 #Essa rota serve para vincular um usuário a uma vaga de emprego
 @app.route('/entrar_vaga_emprego', methods=['POST'])
 def entrar_vaga_emprego():
-
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
+    mycursor = db.cursor()
     id_vaga = request.form['id_vaga']
     email = request.form['email']
-    status = "Nao aprovado"
-    mycursor = db.cursor()
-    sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) VALUES (%s, %s, %s)"
-    values = (email, id_vaga, status)
+    sql_command = "SELECT email FROM usuario_vaga WHERE id_vaga = %s"
+    values = (id_vaga,)
     mycursor.execute(sql_command, values)
-    db.commit()
-
-    return jsonify({'entrar_emprego_status': True})
+    email_check = mycursor.fetchone
+    if email_check is not None:
+        print("ja esta inscrito nessa vaga!")
+        return jsonify({'status': False})
+    else:
+        status = "Nao aprovado"
+        sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) VALUES (%s, %s, %s)"
+        values = (email, id_vaga, status)
+        mycursor.execute(sql_command, values)
+        db.commit()
+        return jsonify({'entrar_emprego_status': True})
 
 
 #Essa rota serve para buscar os usuários inscritos
