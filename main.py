@@ -402,6 +402,26 @@ def entrar_vaga_emprego():
     return jsonify({'entrar_emprego_status': True})
 
 
+@app.route('/sair_vaga_emprego', methods=['POST'])
+def sair_vaga_emprego():
+
+    id_vaga = request.form['id_vaga']
+    email = request.form['email']
+    
+    #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
+    mycursor = db.cursor()
+    sql_command = "DELETE FROM usuario_vaga WHERE email = %s and id_vaga %s"
+    values = (email, id_vaga)
+
+    try:
+        mycursor.execute(sql_command, values)
+    except:
+        return jsonify({'sair_vaga_emprego': False})
+    
+    db.commit()
+    return jsonify({'sair_emprego_status': True})
+
+
 #Essa rota serve para buscar os usuários inscritos
 # em uma determinada vaga
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
