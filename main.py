@@ -390,12 +390,12 @@ def listar_vagas():
 def entrar_vaga_emprego():
 
     #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
-    titulo_vaga = request.form['titulo_vaga']
+    id_vaga = request.form['id_vaga']
     email = request.form['email']
     status = "Nao aprovado"
     mycursor = db.cursor()
-    sql_command = "Insert into usuario_vaga (email, titulo_vaga, situacao) VALUES (%s, %s, %s)"
-    values = (email, titulo_vaga, status)
+    sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) VALUES (%s, %s, %s)"
+    values = (email, id_vaga, status)
     mycursor.execute(sql_command, values)
     db.commit()
 
