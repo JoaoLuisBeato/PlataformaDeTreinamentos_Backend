@@ -392,10 +392,10 @@ def entrar_vaga_emprego():
     mycursor = db.cursor()
     id_vaga = request.form['id_vaga']
     email = request.form['email']
-    sql_command = "SELECT email FROM usuario_vaga WHERE id_vaga = %s"
-    values = (id_vaga,)
+    sql_command = "SELECT email FROM usuario_vaga WHERE id_vaga = %s and email = %s"
+    values = (id_vaga, email)
     mycursor.execute(sql_command, values)
-    email_check = mycursor.fetchone
+    email_check = mycursor.fetchone()
     if email_check is not None:
         print("ja esta inscrito nessa vaga!")
         return jsonify({'status': False})
@@ -411,21 +411,24 @@ def entrar_vaga_emprego():
 @app.route('/sair_vaga_emprego', methods=['POST'])
 def sair_vaga_emprego():
 
-    id_vaga = request.form['id_vaga']
+    id_vaga = int(request.form['id_vaga'])
     email = request.form['email']
     
-    #tabela que contém a relação entre a vaga e quem se inscreveu nela (por email)
     mycursor = db.cursor()
-    sql_command = "DELETE FROM usuario_vaga WHERE email = %s and id_vaga %s"
-    values = (email, id_vaga)
+    sql_command = "SELECT * FROM usuario_vaga WHERE id_vaga = %s and email = %s"
+    values = (id_vaga, email)
+    mycursor.execute(sql_command, values)
+    email_check = mycursor.fetchone()
 
-    try:
+    if email_check is not None:
+        mycursor = db.cursor()
+        sql_command = "DELETE FROM usuario_vaga WHERE email = %s and id_vaga %s"
+        values = (email, id_vaga)
         mycursor.execute(sql_command, values)
-    except:
-        return jsonify({'sair_vaga_emprego': False})
-    
-    db.commit()
-    return jsonify({'sair_emprego_status': True})
+        db.commit()
+        return jsonify({'sair_emprego_status': True})
+    else:
+        return jsonify({'sair_emprego_status': False})
 
 
 #Essa rota serve para buscar os usuários inscritos
