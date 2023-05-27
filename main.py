@@ -420,10 +420,8 @@ def sair_vaga_emprego():
     mycursor.execute(sql_command, values)
     email_check = mycursor.fetchone()
 
-    print("teste\n\n")
-
     if email_check is not None:
-        print("teste\n\n")
+
         sql_command = "DELETE FROM usuario_vaga WHERE id_vaga = %s AND email = %s"
         values = (id_vaga, email)
         mycursor.execute(sql_command, values)
