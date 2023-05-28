@@ -326,6 +326,7 @@ def Corrigir_Teste():
 def vaga_emprego():
 
     #Recebendo os parâmetros passados do frontend
+    id_vaga = request.form['id_vaga']
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -335,8 +336,8 @@ def vaga_emprego():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    sql_command = "INSERT into vaga_emprego (id_vaga, Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s,  %s, %s)"
+    values = (id_vaga, titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
@@ -566,7 +567,7 @@ def Delete_vagas():
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
-    sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
+    sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -616,28 +617,31 @@ def Listar_teste():
 def Listar_treinamentos_alunos():
     mycursor = db.cursor() 
     email = request.form['email']
+
     sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT id_vaga FROM usuario_vaga where email = %s)"
     value = (email,)
     mycursor.execute(sql_command, value)
-    res_list = mycursor.fetchall
+    res_list = mycursor.fetchall()
     tamanho = len(res_list)
     lista_res = []
     for i in range(tamanho):
         listagem_treinamentos = {
-            'Nome comercial': res_list[i][0],
-            'Codigo do curso': res_list[i][1],
+            'Nome Comercial': res_list[i][0],
+            'Código do Curso': res_list[i][1],
             'Descricao': res_list[i][2],
-            'Carga Horaria': res_list[i][3],
-            'Inicio das inscricoes': res_list[i][4],
+            'Carga Horária': res_list[i][3],
+            'Início das incricoes': res_list[i][4],
             'Final das inscricoes': res_list[i][5],
-            'Inicio do treinamento': res_list[i][6],
-            'Final do treinamento': res_list[i][7],
-            'Quantidade minima': res_list[i][8],
-            'Quantidade maxima': res_list[i][9],
-            'Quantidade atual': res_list[i][10]
+            'Início dos treinamentos': res_list[i][6],
+            'Final dos treinamentos': res_list[i][7],
+            'Quantidade mínima de alunos': res_list[i][8],
+            'Quantidade máxima de alunos': res_list[i][9],
+            'Quantidade atual de alunos': res_list[i][10]
         }
 
         lista_res.append(listagem_treinamentos)
+
+    print(lista_res)
     return jsonify(lista_res)
 
 if __name__ == '__main__':
