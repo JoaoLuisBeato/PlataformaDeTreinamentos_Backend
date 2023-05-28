@@ -565,15 +565,33 @@ def update_vaga():
 @app.route('/Delete_vagas', methods=['POST'])
 def Delete_vagas():
 
+
     #Execução dos comandos no banco de dados
-    mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
+
+    mycursor = db.cursor()
     sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
 
+    mycursor = db.cursor()
+    sql_command = "DELETE FROM treinamentos WHERE Codigo_curso = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+    
+    sql_command = "DELETE FROM questoes WHERE id_teste = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+
     return jsonify({'Delete_vaga': 'Delete com sucesso'})
+
+
+
 
 @app.route('/Listar_teste', methods=['POST'])
 def Listar_teste():
