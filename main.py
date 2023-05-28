@@ -577,14 +577,14 @@ def Delete_vagas():
 @app.route('/Listar_teste', methods=['POST'])
 def Listar_teste():
 
-    Nome_comercial = request.form['nome_comercial']
+    id = request.form['id']
 
-    mycursor = db.cursor()  
-    sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
-    value = (Nome_comercial,)
-    mycursor.execute(sql_command, value)
-    id = mycursor.fetchone()
-    id = int(id)
+    #mycursor = db.cursor()  
+    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
+    #value = (Nome_comercial,)
+    #mycursor.execute(sql_command, value)
+    #id = mycursor.fetchone()
+    #id = int(id)
     
 
     mycursor = db.cursor() 
@@ -598,14 +598,14 @@ def Listar_teste():
 
     for i in range(tamanho_questoes):
         listar_teste = {
-            'numero_questao': questoes[i][1],
-            'questao': questoes[i][2],
-            'resposta_a': questoes[i][3],
-            'resposta_b': questoes[i][4],
-            'resposta_c': questoes[i][5],
-            'alternativa_a': questoes[i][6],
-            'alternativa_b': questoes[i][7],
-            'alternativa_c': questoes[i][8]
+            'numero_questao': questoes[i][0],
+            'questao': questoes[i][1],
+            'resposta_a': questoes[i][2],
+            'resposta_b': questoes[i][3],
+            'resposta_c': questoes[i][4],
+            'alternativa_a': questoes[i][5],
+            'alternativa_b': questoes[i][6],
+            'alternativa_c': questoes[i][7]
         }
 
         formulario.append(listar_teste)
