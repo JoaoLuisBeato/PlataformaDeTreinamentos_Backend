@@ -1,6 +1,7 @@
 # Api da aplicação utilizando a biblioteca Flask em linguagem Python
 from flask import Flask, request, jsonify
 import mysql.connector
+import ast;
 
 #Rotas e parâmetros de acesso ao nosso banco de dados - MySQL
 #hospedado na plataforma railway
@@ -598,17 +599,20 @@ def Listar_teste():
 
     for i in range(tamanho_questoes):
         listar_teste = {
-            'numero_questao': questoes[i][0],
-            'questao': questoes[i][1],
-            'resposta_a': questoes[i][2],
-            'resposta_b': questoes[i][3],
-            'resposta_c': questoes[i][4],
-            'alternativa_a': questoes[i][5],
-            'alternativa_b': questoes[i][6],
-            'alternativa_c': questoes[i][7]
+            'id_teste': questoes[i][0],
+            'numero_questao': questoes[i][1],
+            'questao': questoes[i][2],
+            'resposta_a': questoes[i][3],
+            'resposta_b': questoes[i][4],
+            'resposta_c': questoes[i][5],
+            'alternativa_a': questoes[i][6],
+            'alternativa_b': questoes[i][7],
+            'alternativa_c': questoes[i][8]
         }
 
         formulario.append(listar_teste)
+
+        print(formulario)
     
     return jsonify(formulario)
 
