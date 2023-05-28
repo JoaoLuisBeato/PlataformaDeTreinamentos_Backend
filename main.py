@@ -1,6 +1,7 @@
 # Api da aplicação utilizando a biblioteca Flask em linguagem Python
 from flask import Flask, request, jsonify
 import mysql.connector
+import ast;
 
 #Rotas e parâmetros de acesso ao nosso banco de dados - MySQL
 #hospedado na plataforma railway
@@ -577,14 +578,14 @@ def Delete_vagas():
 @app.route('/Listar_teste', methods=['POST'])
 def Listar_teste():
 
-    Nome_comercial = request.form['nome_comercial']
+    id = request.form['id']
 
-    mycursor = db.cursor()  
-    sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
-    value = (Nome_comercial,)
-    mycursor.execute(sql_command, value)
-    id = mycursor.fetchone()
-    id = int(id)
+    #mycursor = db.cursor()  
+    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
+    #value = (Nome_comercial,)
+    #mycursor.execute(sql_command, value)
+    #id = mycursor.fetchone()
+    #id = int(id)
     
 
     mycursor = db.cursor() 
@@ -598,6 +599,7 @@ def Listar_teste():
 
     for i in range(tamanho_questoes):
         listar_teste = {
+            'id_teste': questoes[i][0],
             'numero_questao': questoes[i][1],
             'questao': questoes[i][2],
             'resposta_a': questoes[i][3],
@@ -609,6 +611,8 @@ def Listar_teste():
         }
 
         formulario.append(listar_teste)
+
+        print(formulario)
     
     return jsonify(formulario)
 
