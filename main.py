@@ -297,29 +297,44 @@ def criar_questao():
 @app.route('/Corrigir_teste', methods=['POST'])
 def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
-    id_teste = 213023
-    resp_list = [] #lista com as respostas do aluno
-    email = request.form('email')
+    id_teste = request.form['id']
+    resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
+
+    resp_list = resp_list.replace("[", "")
+    resp_list = resp_list.replace("]", "")
+    resp_list = resp_list.replace('"', "")
+
+    lista = resp_list.split(",")
+
+    email = request.form['email']
     mycursor = db.cursor()
 
-    for i in resp_list:
-        sql_command = "SELECT %s FROM questoes WHERE id_teste = %d and numero_questao = Questao %d"
-        value = (resp_list[i], id_teste, i+1)
+    for index, item in enumerate(lista):
+
+        questao = 'Questão ' + str(index + 1)
+        
+        sql_command = "SELECT " + item +  " FROM questoes WHERE id_teste = %s and numero_questao = %s"
+        value = (id_teste, questao)
         mycursor.execute(sql_command, value)
         res = mycursor.fetchone()
-        if res == True:
-            respostas_corretas+=1
-    if respostas_corretas >= (resp_list.len)/2:
+        print(res[0])
+        if res[0] == "true":
+            respostas_corretas += 1
+
+    if respostas_corretas >= (len(lista))/2:
+        print(respostas_corretas)
         sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s"
         value = ('Aprovado', email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
-        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s WHERE email = %s"
-        value = ('Reprovado', 'Acertos insuficientes', email)
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s" #, justificativa = %s
+        value = ('Reprovado', email) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
+        return jsonify({'status': 'Reprovado'})
 
 
 #Essa rota serve para qeu seja criada um nova vaga de emprego
@@ -629,8 +644,6 @@ def Listar_teste():
         }
 
         formulario.append(listar_teste)
-
-        print(formulario)
     
     return jsonify(formulario)
 
