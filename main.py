@@ -422,6 +422,11 @@ def entrar_vaga_emprego():
         values = (email, id_vaga, status)
         mycursor.execute(sql_command, values)
         db.commit()
+        status = "Em andamento"
+        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+        values = (email, id_vaga, status, 0)
+        mycursor.execute(sql_command, values)
+        db.commit()
         return jsonify({'entrar_emprego_status': True})
 
 
@@ -654,7 +659,7 @@ def Listar_treinamentos_alunos():
     email = request.form['email']
 
     status = 'Em andamento'
-    sql_command = "SELECT * FROM treinamentos where id in (SELECT id FROM treinamento_alunos where email = %s AND status = %s)"
+    sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT codigo_treinamento FROM treinamento_alunos where email = %s AND status = %s)"
     value = (email, status)
     mycursor.execute(sql_command, value)
     res_list = mycursor.fetchall()
