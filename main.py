@@ -323,15 +323,15 @@ def Corrigir_Teste():
 
     if respostas_corretas >= (len(lista))/2:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s"
-        value = ('Aprovado', email)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
+        value = ('Aprovado', respostas_corretas, email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s" #, justificativa = %s
-        value = ('Reprovado', email) #, 'Acertos insuficientes'
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s" #, justificativa = %s
+        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Reprovado'})
@@ -489,7 +489,7 @@ def historico():
             'email': historico[i][0],
             'Codigo do curso': historico[i][1],
             'Status': historico[i][2],
-            'Justificativa': historico[i][3]
+            'Nota': historico[i][3]
         }
         historico_list.append(historico_env)
     return jsonify(historico_list)
