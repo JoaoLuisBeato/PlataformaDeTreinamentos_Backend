@@ -457,20 +457,20 @@ def sair_vaga_emprego():
 # em uma determinada vaga
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
 def Listar_inscritos_vaga():
-    titulo_vaga = request.form['titulo_vaga']
+    id_vaga = request.form['id']
     mycursor = db.cursor()
-    sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
-    values = (titulo_vaga,)
+    sql_command = "SELECT email from usuario_vaga WHERE id_vaga = %s"
+    values = (id_vaga,)
     mycursor.execute(sql_command, values)
     listar_inscritos_vaga = mycursor.fetchall()
     lista_arr = []
     tamanho = len(listar_inscritos_vaga)
     for i in range(tamanho):
         vaga = {
-        'Titulo da vaga': listar_inscritos_vaga[i][0],
-        'email': listar_inscritos_vaga[i][1],
+            'email': listar_inscritos_vaga[i][0],
         }
         lista_arr.append(vaga)
+        print(lista_arr)
     return jsonify(lista_arr)
 
 
