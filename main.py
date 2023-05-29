@@ -653,12 +653,14 @@ def Listar_treinamentos_alunos():
     mycursor = db.cursor() 
     email = request.form['email']
 
-    sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT id_vaga FROM usuario_vaga where email = %s)"
-    value = (email,)
+    status = 'Em andamento'
+    sql_command = "SELECT * FROM treinamentos where id in (SELECT id FROM treinamento_alunos where email = %s AND status = %s)"
+    value = (email, status)
     mycursor.execute(sql_command, value)
     res_list = mycursor.fetchall()
     tamanho = len(res_list)
     lista_res = []
+
     for i in range(tamanho):
         listagem_treinamentos = {
             'Nome Comercial': res_list[i][0],
@@ -675,9 +677,9 @@ def Listar_treinamentos_alunos():
         }
 
         lista_res.append(listagem_treinamentos)
-
     print(lista_res)
     return jsonify(lista_res)
+
 
 if __name__ == '__main__':
     app.run()
