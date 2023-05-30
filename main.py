@@ -495,28 +495,6 @@ def historico():
     return jsonify(historico_list)
 
 
-@app.route('/Mentor_historico', methods=['POST'])
-def mentor_historico():
-    email = request.form['email']
-    mycursor = db.cursor()
-    sql_command = "SELECT * from treinamento_alunos WHERE email = %s ORDER BY id DESC LIMIT 10" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
-    values = (email,)
-    mycursor.execute(sql_command, values)
-    historico = mycursor.fetchall()
-
-    historico_list = []
-    tamanho = len(historico)
-    for i in range(tamanho):
-        historico_env = {
-            'email': historico[i][0],
-            'Codigo do curso': historico[i][1],
-            'Status': historico[i][2],
-            'Justificativa': historico[i][3]
-        }
-        historico_list.append(historico_env)
-    return jsonify(historico)
-
-
 # Essa rota serve para que possam ser feitas atualizações
 # dos treinamentos criados
 @app.route('/Update_treinamentos', methods=['POST'])
@@ -705,7 +683,24 @@ def Listar_treinamentos_id():
     print(lista_treinamento)
     return jsonify(lista_treinamento)
 
+@app.route('/Listar_usuarios_para_mentor', methods=['POST'])
+def Listar_usuarios_para_mentor():
+    mycursor = db.cursor()
+    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
+    mycursor.execute(sql_command)
+    res_list = mycursor.fetchall()
 
+    lista_usuarios = []
+
+    tamanho = len(res_list)
+    for i in range(tamanho):
+        usuarios = {
+            'email': res_list[i][0],
+        }
+        lista_usuarios.append(usuarios)
+
+    print(lista_usuarios)
+    return jsonify(lista_usuarios)
 
 if __name__ == '__main__':
     app.run()
