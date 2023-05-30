@@ -702,6 +702,47 @@ def Listar_usuarios_para_mentor():
     print(lista_usuarios)
     return jsonify(lista_usuarios)
 
+
+@app.route('/vaga_empresa_criar', methods=['POST'])
+def vaga_empresa_criar():
+    mycursor = db.cursor()
+    id_empresa = request.form['id_empresa']
+    email_empresa = request.form['email_empresa']
+    sql_command = "INSERT into vaga_empresa (email, id_vaga) values (%s, %s)"
+    values = (email_empresa, id_empresa)
+    mycursor.execute(sql_command, values)
+    db.commit()
+    return jsonify({'status': 'OK'})
+
+
+
+@app.route('/vaga_empresa_listar', methods=['POST'])
+def vaga_empresa_listar():
+    mycursor = db.cursor()
+    email_empresa = request.form['email_empresa']
+    sql_command = "SELECT * from treinamento_alunos WHERE codigo_treinamento in (Select id_vaga FROM vaga_empresa WHERE email = %s"
+    values = (email_empresa,)
+    mycursor.execute(sql_command, values)
+    lista_res = mycursor.fetchall()
+    
+    lista_enviar = []
+    tamanho = len(lista_res)
+    
+
+    for i in range(tamanho):
+        lista_vaga_empresa = {
+            'email': lista_res[i][0],
+            'Codigo do curso': lista_res[i][1],
+            'Status': lista_res[i][2],
+            'Nota': lista_res[i][3]
+        }
+        lista_enviar.append(lista_vaga_empresa)
+    
+    
+    return jsonify(lista_enviar)
+
+
+
 if __name__ == '__main__':
     app.run()
 
