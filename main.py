@@ -685,6 +685,27 @@ def Listar_treinamentos_alunos():
     print(lista_res)
     return jsonify(lista_res)
 
+@app.route('/Listar_treinamentos_id', methods=['POST'])
+def Listar_treinamentos_id():
+    mycursor = db.cursor()
+    sql_command = "SELECT Nome_Comercial, Codigo_curso FROM treinamentos"
+    mycursor.execute(sql_command)
+    res_list = mycursor.fetchall()
+
+    lista_treinamento = []
+
+    tamanho = len(res_list)
+    for i in range(tamanho):
+        treinamento_id = {
+            'Nome Comercial': res_list[i][0],
+            'Código do Curso': res_list[i][1],
+        }
+        lista_treinamento.append(treinamento_id)
+
+    print(lista_treinamento)
+    return jsonify(lista_treinamento)
+
+
 
 if __name__ == '__main__':
     app.run()
