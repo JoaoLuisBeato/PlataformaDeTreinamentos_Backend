@@ -75,3 +75,13 @@ CREATE TABLE usuario_vaga (
 
 ALTER TABLE usuario_vaga
 ADD PRIMARY KEY (email, id_vaga);
+
+
+CREATE TABLE vaga_empresa (
+  email VARCHAR(255),
+  id_vaga INT
+  
+);
+
+ALTER TABLE vaga_empresa
+ADD PRIMARY KEY (email, id_vaga);

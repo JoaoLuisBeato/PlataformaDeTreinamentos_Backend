@@ -202,7 +202,6 @@ def Lista_treinamento():
 
         data.append(treinamento)
         
-    print(data)
     #Restorno da lista de treinamentos para o frontend
     return jsonify(data)
 
@@ -233,9 +232,10 @@ def entrar_treinamento():
             value = (codigo_treinamento,)
             mycursor.execute(sql_command, value)
             db.commit()
-            sql_command = "INSERT into treinamentos_alunos (email, codigo_treinamento, status) VALUES (%s, %s, %s)"
-            value = (email, codigo_treinamento, 'Em andamento')
-            mycursor.execute(sql_command, value)
+            status = "Em andamento"
+            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+            values = (email, codigo_treinamento, status, 0)
+            mycursor.execute(sql_command, values)
             db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
             return jsonify({'registro_treinamento': True}) #retorna True para o flutter
@@ -253,8 +253,8 @@ def sair_treinamento():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s"
-    value = (email,)
+    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s AND codigo_treinamento = %s"
+    value = (email, codigo_treinamento)
     mycursor.execute(sql_command, value)
     db.commit()
     
@@ -265,6 +265,24 @@ def sair_treinamento():
     db.commit()
 
     return jsonify({'status_delete' : 'Deletado com sucesso!'})
+
+@app.route('/Listar_inscritos_treinamento', methods=['POST'])
+def Listar_inscritos_treinamento():
+    id_treinamento = request.form['codigo_curso']
+    mycursor = db.cursor()
+    sql_command = "SELECT email from treinamento_alunos WHERE codigo_treinamento = %s"
+    values = (id_treinamento,)
+    mycursor.execute(sql_command, values)
+    listar_inscritos_treinamento = mycursor.fetchall()
+    lista_arr = []
+    tamanho = len(listar_inscritos_treinamento)
+    for i in range(tamanho):
+        vaga = {
+            'email': listar_inscritos_treinamento[i][0],
+        }
+        lista_arr.append(vaga)
+        print(lista_arr)
+    return jsonify(lista_arr)
 
 #Essa Rota serve para que seja criado as questões 
 # do formulário de cada treinamento
@@ -321,7 +339,7 @@ def Corrigir_Teste():
         if res[0] == "true":
             respostas_corretas += 1
 
-    if respostas_corretas >= (len(lista))/2:
+    if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
         sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
         value = ('Aprovado', respostas_corretas, email)
@@ -631,13 +649,13 @@ def Listar_teste():
     return jsonify(formulario)
 
 
-@app.route('/Listar_treinamentos_aluno', methods=['POST'])
-def Listar_treinamentos_alunos():
+@app.route('/Listar_vaga_aluno', methods=['POST'])
+def Listar_vaga_alunos():
     mycursor = db.cursor() 
     email = request.form['email']
 
-    status = 'Em andamento'
-    sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT codigo_treinamento FROM treinamento_alunos where email = %s AND status = %s)"
+    status = 'Aprovado'
+    sql_command = "SELECT * FROM vaga_emprego where id_vaga in (SELECT codigo_treinamento FROM treinamento_alunos where email = %s AND status = %s)"
     value = (email, status)
     mycursor.execute(sql_command, value)
     res_list = mycursor.fetchall()
@@ -645,21 +663,17 @@ def Listar_treinamentos_alunos():
     lista_res = []
 
     for i in range(tamanho):
-        listagem_treinamentos = {
-            'Nome Comercial': res_list[i][0],
-            'Código do Curso': res_list[i][1],
-            'Descricao': res_list[i][2],
-            'Carga Horária': res_list[i][3],
-            'Início das incricoes': res_list[i][4],
-            'Final das inscricoes': res_list[i][5],
-            'Início dos treinamentos': res_list[i][6],
-            'Final dos treinamentos': res_list[i][7],
-            'Quantidade mínima de alunos': res_list[i][8],
-            'Quantidade máxima de alunos': res_list[i][9],
-            'Quantidade atual de alunos': res_list[i][10]
+        listagem_vaga = {
+            'id': res_list[i][0],
+            'Titulo da vaga': res_list[i][1],
+            'Empresa': res_list[i][2],
+            'Descricao':res_list[i][3],
+            'Pré Requisito': res_list[i][4],
+            'Salário mínimo': res_list[i][5],
+            'Salário máximo': res_list[i][6],
         }
 
-        lista_res.append(listagem_treinamentos)
+        lista_res.append(listagem_vaga)
     print(lista_res)
     return jsonify(lista_res)
 
@@ -701,6 +715,45 @@ def Listar_usuarios_para_mentor():
 
     print(lista_usuarios)
     return jsonify(lista_usuarios)
+
+
+@app.route('/vaga_empresa_criar', methods=['POST'])
+def vaga_empresa_criar():
+    mycursor = db.cursor()
+    id_empresa = request.form['id_empresa']
+    email_empresa = request.form['email_empresa']
+    sql_command = "INSERT into vaga_empresa (email, id_vaga) values (%s, %s)"
+    values = (email_empresa, id_empresa)
+    mycursor.execute(sql_command, values)
+    db.commit()
+    return jsonify({'status': 'OK'})
+
+
+
+@app.route('/vaga_empresa_listar', methods=['POST'])
+def vaga_empresa_listar():
+    mycursor = db.cursor()
+    email_empresa = request.form['email_empresa']
+    sql_command = "SELECT * from treinamento_alunos WHERE codigo_treinamento in (Select id_vaga FROM vaga_empresa WHERE email = %s)"
+    values = (email_empresa,)
+    mycursor.execute(sql_command, values)
+    lista_res = mycursor.fetchall()
+    
+    lista_enviar = []
+    tamanho = len(lista_res)
+    
+
+    for i in range(tamanho):
+        lista_vaga_empresa = {
+            'email': lista_res[i][0],
+            'Codigo do curso': lista_res[i][1],
+            'Status': lista_res[i][2],
+            'Nota': lista_res[i][3]
+        }
+        lista_enviar.append(lista_vaga_empresa)
+    
+    
+    return jsonify(lista_enviar)
 
 if __name__ == '__main__':
     app.run()
