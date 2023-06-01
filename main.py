@@ -321,7 +321,7 @@ def Corrigir_Teste():
         if res[0] == "true":
             respostas_corretas += 1
 
-    if respostas_corretas >= (len(lista))/2:
+    if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
         sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
         value = ('Aprovado', respostas_corretas, email)
@@ -720,7 +720,7 @@ def vaga_empresa_criar():
 def vaga_empresa_listar():
     mycursor = db.cursor()
     email_empresa = request.form['email_empresa']
-    sql_command = "SELECT * from treinamento_alunos WHERE codigo_treinamento in (Select id_vaga FROM vaga_empresa WHERE email = %s"
+    sql_command = "SELECT * from treinamento_alunos WHERE codigo_treinamento in (Select id_vaga FROM vaga_empresa WHERE email = %s)"
     values = (email_empresa,)
     mycursor.execute(sql_command, values)
     lista_res = mycursor.fetchall()
