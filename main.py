@@ -1,6 +1,7 @@
 # Api da aplicação utilizando a biblioteca Flask em linguagem Python
 from flask import Flask, request, jsonify
 import mysql.connector
+import ast;
 
 #Rotas e parâmetros de acesso ao nosso banco de dados - MySQL
 #hospedado na plataforma railway
@@ -201,7 +202,6 @@ def Lista_treinamento():
 
         data.append(treinamento)
         
-    print(data)
     #Restorno da lista de treinamentos para o frontend
     return jsonify(data)
 
@@ -232,9 +232,10 @@ def entrar_treinamento():
             value = (codigo_treinamento,)
             mycursor.execute(sql_command, value)
             db.commit()
-            sql_command = "INSERT into treinamentos_alunos (email, codigo_treinamento, status) VALUES (%s, %s, %s)"
-            value = (email, codigo_treinamento, 'Em andamento')
-            mycursor.execute(sql_command, value)
+            status = "Em andamento"
+            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+            values = (email, codigo_treinamento, status, 0)
+            mycursor.execute(sql_command, values)
             db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
             return jsonify({'registro_treinamento': True}) #retorna True para o flutter
@@ -252,8 +253,8 @@ def sair_treinamento():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s"
-    value = (email,)
+    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s AND codigo_treinamento = %s"
+    value = (email, codigo_treinamento)
     mycursor.execute(sql_command, value)
     db.commit()
     
@@ -264,6 +265,24 @@ def sair_treinamento():
     db.commit()
 
     return jsonify({'status_delete' : 'Deletado com sucesso!'})
+
+@app.route('/Listar_inscritos_treinamento', methods=['POST'])
+def Listar_inscritos_treinamento():
+    id_treinamento = request.form['codigo_curso']
+    mycursor = db.cursor()
+    sql_command = "SELECT email from treinamento_alunos WHERE codigo_treinamento = %s"
+    values = (id_treinamento,)
+    mycursor.execute(sql_command, values)
+    listar_inscritos_treinamento = mycursor.fetchall()
+    lista_arr = []
+    tamanho = len(listar_inscritos_treinamento)
+    for i in range(tamanho):
+        vaga = {
+            'email': listar_inscritos_treinamento[i][0],
+        }
+        lista_arr.append(vaga)
+        print(lista_arr)
+    return jsonify(lista_arr)
 
 #Essa Rota serve para que seja criado as questões 
 # do formulário de cada treinamento
@@ -296,29 +315,44 @@ def criar_questao():
 @app.route('/Corrigir_teste', methods=['POST'])
 def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
-    id_teste = 213023
-    resp_list = [] #lista com as respostas do aluno
-    email = request.form('email')
+    id_teste = request.form['id']
+    resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
+
+    resp_list = resp_list.replace("[", "")
+    resp_list = resp_list.replace("]", "")
+    resp_list = resp_list.replace('"', "")
+
+    lista = resp_list.split(",")
+
+    email = request.form['email']
     mycursor = db.cursor()
 
-    for i in resp_list:
-        sql_command = "SELECT %s FROM questoes WHERE id_teste = %d and numero_questao = Questao %d"
-        value = (resp_list[i], id_teste, i+1)
+    for index, item in enumerate(lista):
+
+        questao = 'Questão ' + str(index + 1)
+        
+        sql_command = "SELECT " + item +  " FROM questoes WHERE id_teste = %s and numero_questao = %s"
+        value = (id_teste, questao)
         mycursor.execute(sql_command, value)
         res = mycursor.fetchone()
-        if res == True:
-            respostas_corretas+=1
-    if respostas_corretas >= (resp_list.len)/2:
-        sql_command = "UPDATE treinamento_alunos SET status = %s WHERE email = %s"
-        value = ('Aprovado', email)
+        print(res[0])
+        if res[0] == "true":
+            respostas_corretas += 1
+
+    if respostas_corretas >= (len(lista)) * 0.7:
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
+        value = ('Aprovado', respostas_corretas, email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
-        sql_command = "UPDATE treinamento_alunos SET status = %s, justificativa = %s WHERE email = %s"
-        value = ('Reprovado', 'Acertos insuficientes', email)
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s" #, justificativa = %s
+        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
+        return jsonify({'status': 'Reprovado'})
 
 
 #Essa rota serve para qeu seja criada um nova vaga de emprego
@@ -326,6 +360,7 @@ def Corrigir_Teste():
 def vaga_emprego():
 
     #Recebendo os parâmetros passados do frontend
+    id_vaga = request.form['id_vaga']
     titulo_vaga = request.form['titulo_vaga']
     empresa_oferece = request.form['empresa_oferece']
     descricao_vaga = request.form['descricao_vaga']
@@ -335,8 +370,8 @@ def vaga_emprego():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
-    sql_command = "INSERT into vaga_emprego (Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s,  %s, %s)"
-    values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
+    sql_command = "INSERT into vaga_emprego (id_vaga, Titulo_vaga, Empresa_oferece, Descricao_vaga, Pre_requisito, Salario_minimo, Salario_maximo) VALUES (%s, %s, %s, %s, %s,  %s, %s)"
+    values = (id_vaga, titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo)
     mycursor.execute(sql_command, values)
     db.commit()
 
@@ -405,6 +440,11 @@ def entrar_vaga_emprego():
         values = (email, id_vaga, status)
         mycursor.execute(sql_command, values)
         db.commit()
+        status = "Em andamento"
+        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+        values = (email, id_vaga, status, 0)
+        mycursor.execute(sql_command, values)
+        db.commit()
         return jsonify({'entrar_emprego_status': True})
 
 
@@ -435,20 +475,20 @@ def sair_vaga_emprego():
 # em uma determinada vaga
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
 def Listar_inscritos_vaga():
-    titulo_vaga = request.form['titulo_vaga']
+    id_vaga = request.form['id']
     mycursor = db.cursor()
-    sql_command = "SELECT * from vaga_emprego_candidatos WHERE titulo_vaga = %s"
-    values = (titulo_vaga,)
+    sql_command = "SELECT email from usuario_vaga WHERE id_vaga = %s"
+    values = (id_vaga,)
     mycursor.execute(sql_command, values)
     listar_inscritos_vaga = mycursor.fetchall()
     lista_arr = []
     tamanho = len(listar_inscritos_vaga)
     for i in range(tamanho):
         vaga = {
-        'Titulo da vaga': listar_inscritos_vaga[i][0],
-        'email': listar_inscritos_vaga[i][1],
+            'email': listar_inscritos_vaga[i][0],
         }
         lista_arr.append(vaga)
+        print(lista_arr)
     return jsonify(lista_arr)
 
 
@@ -467,32 +507,10 @@ def historico():
             'email': historico[i][0],
             'Codigo do curso': historico[i][1],
             'Status': historico[i][2],
-            'Justificativa': historico[i][3]
+            'Nota': historico[i][3]
         }
         historico_list.append(historico_env)
     return jsonify(historico_list)
-
-
-@app.route('/Mentor_historico', methods=['POST'])
-def mentor_historico():
-    email = request.form['email']
-    mycursor = db.cursor()
-    sql_command = "SELECT * from treinamento_alunos WHERE email = %s ORDER BY id DESC LIMIT 10" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
-    values = (email,)
-    mycursor.execute(sql_command, values)
-    historico = mycursor.fetchall()
-
-    historico_list = []
-    tamanho = len(historico)
-    for i in range(tamanho):
-        historico_env = {
-            'email': historico[i][0],
-            'Codigo do curso': historico[i][1],
-            'Status': historico[i][2],
-            'Justificativa': historico[i][3]
-        }
-        historico_list.append(historico_env)
-    return jsonify(historico)
 
 
 # Essa rota serve para que possam ser feitas atualizações
@@ -563,27 +581,45 @@ def update_vaga():
 @app.route('/Delete_vagas', methods=['POST'])
 def Delete_vagas():
 
+
     #Execução dos comandos no banco de dados
-    mycursor = db.cursor()
     codigo_vagas = request.form['codigo_vaga']
-    sql_command = "DELETE FROM vaga_emprego WHERE id = %s"
+
+    mycursor = db.cursor()
+    sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
 
+    mycursor = db.cursor()
+    sql_command = "DELETE FROM treinamentos WHERE Codigo_curso = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+    
+    sql_command = "DELETE FROM questoes WHERE id_teste = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+
     return jsonify({'Delete_vaga': 'Delete com sucesso'})
+
+
+
 
 @app.route('/Listar_teste', methods=['POST'])
 def Listar_teste():
 
-    Nome_comercial = request.form['nome_comercial']
+    id = request.form['id']
 
-    mycursor = db.cursor()  
-    sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
-    value = (Nome_comercial,)
-    mycursor.execute(sql_command, value)
-    id = mycursor.fetchone()
-    id = int(id)
+    #mycursor = db.cursor()  
+    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
+    #value = (Nome_comercial,)
+    #mycursor.execute(sql_command, value)
+    #id = mycursor.fetchone()
+    #id = int(id)
     
 
     mycursor = db.cursor() 
@@ -597,6 +633,7 @@ def Listar_teste():
 
     for i in range(tamanho_questoes):
         listar_teste = {
+            'id_teste': questoes[i][0],
             'numero_questao': questoes[i][1],
             'questao': questoes[i][2],
             'resposta_a': questoes[i][3],
@@ -612,33 +649,111 @@ def Listar_teste():
     return jsonify(formulario)
 
 
-@app.route('/Listar_treinamentos_aluno', methods=['POST'])
-def Listar_treinamentos_alunos():
+@app.route('/Listar_vaga_aluno', methods=['POST'])
+def Listar_vaga_alunos():
     mycursor = db.cursor() 
     email = request.form['email']
-    sql_command = "SELECT * FROM treinamentos where Codigo_curso in (SELECT id_vaga FROM usuario_vaga where email = %s)"
-    value = (email,)
+
+    status = 'Aprovado'
+    sql_command = "SELECT * FROM vaga_emprego where id_vaga in (SELECT codigo_treinamento FROM treinamento_alunos where email = %s AND status = %s)"
+    value = (email, status)
     mycursor.execute(sql_command, value)
-    res_list = mycursor.fetchall
+    res_list = mycursor.fetchall()
     tamanho = len(res_list)
     lista_res = []
+
     for i in range(tamanho):
-        listagem_treinamentos = {
-            'Nome comercial': res_list[i][0],
-            'Codigo do curso': res_list[i][1],
-            'Descricao': res_list[i][2],
-            'Carga Horaria': res_list[i][3],
-            'Inicio das inscricoes': res_list[i][4],
-            'Final das inscricoes': res_list[i][5],
-            'Inicio do treinamento': res_list[i][6],
-            'Final do treinamento': res_list[i][7],
-            'Quantidade minima': res_list[i][8],
-            'Quantidade maxima': res_list[i][9],
-            'Quantidade atual': res_list[i][10]
+        listagem_vaga = {
+            'id': res_list[i][0],
+            'Titulo da vaga': res_list[i][1],
+            'Empresa': res_list[i][2],
+            'Descricao':res_list[i][3],
+            'Pré Requisito': res_list[i][4],
+            'Salário mínimo': res_list[i][5],
+            'Salário máximo': res_list[i][6],
         }
 
-        lista_res.append(listagem_treinamentos)
+        lista_res.append(listagem_vaga)
+    print(lista_res)
     return jsonify(lista_res)
+
+@app.route('/Listar_treinamentos_id', methods=['POST'])
+def Listar_treinamentos_id():
+    mycursor = db.cursor()
+    sql_command = "SELECT Nome_Comercial, Codigo_curso FROM treinamentos"
+    mycursor.execute(sql_command)
+    res_list = mycursor.fetchall()
+
+    lista_treinamento = []
+
+    tamanho = len(res_list)
+    for i in range(tamanho):
+        treinamento_id = {
+            'Nome Comercial': res_list[i][0],
+            'Código do Curso': res_list[i][1],
+        }
+        lista_treinamento.append(treinamento_id)
+
+    print(lista_treinamento)
+    return jsonify(lista_treinamento)
+
+@app.route('/Listar_usuarios_para_mentor', methods=['POST'])
+def Listar_usuarios_para_mentor():
+    mycursor = db.cursor()
+    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
+    mycursor.execute(sql_command)
+    res_list = mycursor.fetchall()
+
+    lista_usuarios = []
+
+    tamanho = len(res_list)
+    for i in range(tamanho):
+        usuarios = {
+            'email': res_list[i][0],
+        }
+        lista_usuarios.append(usuarios)
+
+    print(lista_usuarios)
+    return jsonify(lista_usuarios)
+
+
+@app.route('/vaga_empresa_criar', methods=['POST'])
+def vaga_empresa_criar():
+    mycursor = db.cursor()
+    id_empresa = request.form['id_empresa']
+    email_empresa = request.form['email_empresa']
+    sql_command = "INSERT into vaga_empresa (email, id_vaga) values (%s, %s)"
+    values = (email_empresa, id_empresa)
+    mycursor.execute(sql_command, values)
+    db.commit()
+    return jsonify({'status': 'OK'})
+
+
+
+@app.route('/vaga_empresa_listar', methods=['POST'])
+def vaga_empresa_listar():
+    mycursor = db.cursor()
+    email_empresa = request.form['email_empresa']
+    sql_command = "SELECT * from treinamento_alunos WHERE codigo_treinamento in (Select id_vaga FROM vaga_empresa WHERE email = %s)"
+    values = (email_empresa,)
+    mycursor.execute(sql_command, values)
+    lista_res = mycursor.fetchall()
+    
+    lista_enviar = []
+    tamanho = len(lista_res)
+    
+
+    for i in range(tamanho):
+        lista_vaga_empresa = {
+            'email': lista_res[i][0],
+            'Codigo do curso': lista_res[i][1],
+            'Status': lista_res[i][2],
+            'Nota': lista_res[i][3]
+        }
+        lista_enviar.append(lista_vaga_empresa)
+    
+    
+    return jsonify(lista_enviar)
 
 if __name__ == '__main__':
     app.run()
