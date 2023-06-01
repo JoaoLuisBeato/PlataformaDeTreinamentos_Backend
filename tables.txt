@@ -20,7 +20,9 @@ Create table treinamentos(
     Final_treinamentos varchar(100),
 	qntd_min int,
     qntd_max int,
-    qntd_atual int
+    qntd_atual int,
+    ci varchar(3000),
+    ca varchar(3000)
 );
 
 ALTER TABLE railway.treinamentos ADD PRIMARY KEY (Codigo_curso);
