@@ -142,13 +142,15 @@ def treinamento():
     final_treinamentos = request.form['final_treinamentos'] #dataFinalTreinamento
     qnt_min = request.form['qnt_min'] ##ISSO DAQUI É UM INT %d minCandidatos
     qnt_max = request.form['qnt_max'] ##ISSO DAQUI É UM INT %d maxCandidatos
+    curso_ini = request.form['curso_inicial']
+    curso_av = request.form['curso_avancado']
     qnt_atual = 0
 
     print(nome_comercial)
     #Execução dos comando no banco de dados
     mycursor = db.cursor()
-    sql_command = "INSERT INTO treinamentos (Nome_Comercial, Codigo_curso, Descricao, Carga_horaria, Inicio_inscricoes, Final_inscricoes, Inicio_treinamentos, Final_treinamentos, qntd_min, qntd_max, qntd_atual) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (nome_comercial, codigo_curso, descricao, carga_horaria, inicio_inscricoes, final_inscricoes, inicio_treinamentos, final_treinamentos, qnt_min, qnt_max, qnt_atual)
+    sql_command = "INSERT INTO treinamentos (Nome_Comercial, Codigo_curso, Descricao, Carga_horaria, Inicio_inscricoes, Final_inscricoes, Inicio_treinamentos, Final_treinamentos, qntd_min, qntd_max, qntd_atual, ci, ca) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (nome_comercial, codigo_curso, descricao, carga_horaria, inicio_inscricoes, final_inscricoes, inicio_treinamentos, final_treinamentos, qnt_min, qnt_max, qnt_atual, curso_ini, curso_av)
     mycursor.execute(sql_command, values)
     db.commit()
     
