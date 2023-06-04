@@ -757,6 +757,30 @@ def vaga_empresa_listar():
     
     return jsonify(lista_enviar)
 
+@app.route('/curso_introdutorio_treinamentos', methods=['POST'])
+def Curso_introdutorio_treinamento():
+
+    id = request.form['id']
+
+    mycursor = db.cursor()
+    sql_command = "SELECT ci FROM treinamentos where Codigo_curso = %s"
+    values = (id,)
+    mycursor.execute(sql_command, values)
+    ci_treinamentos = mycursor.fetchone()
+    
+    lista_enviar = []
+    tamanho = len(ci_treinamentos)
+    
+
+    for i in range(tamanho):
+        ci_treinamento = {
+            'ci': ci_treinamentos[i],
+        }
+        lista_enviar.append(ci_treinamento)
+    
+    
+    return jsonify(lista_enviar)
+
 if __name__ == '__main__':
     app.run()
 
