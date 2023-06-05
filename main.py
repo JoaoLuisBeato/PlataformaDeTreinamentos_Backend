@@ -235,8 +235,8 @@ def entrar_treinamento():
             mycursor.execute(sql_command, value)
             db.commit()
             status = "Em andamento"
-            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
-            values = (email, codigo_treinamento, status, 0)
+            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1, nota_2, nota_3) VALUES (%s, %s, %s, %s, %s, %s)"
+            values = (email, codigo_treinamento, status, 0, 0, 0)
             mycursor.execute(sql_command, values)
             db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
@@ -326,31 +326,35 @@ def Corrigir_Teste():
 
     lista = resp_list.split(",")
 
-    email = request.form['email']
+    print(lista)
+
+    email = request.form['email'] 
     mycursor = db.cursor()
 
     for index, item in enumerate(lista):
 
-        questao = 'Questão ' + str(index + 1)
+        if index < (len(lista)):
+
+            questao = 'Questão ' + str(index + 1)
         
-        sql_command = "SELECT " + item +  " FROM questoes WHERE id_teste = %s and numero_questao = %s"
-        value = (id_teste, questao)
-        mycursor.execute(sql_command, value)
-        res = mycursor.fetchone()
-        print(res[0])
-        if res[0] == "true":
-            respostas_corretas += 1
+            sql_command = "SELECT " + item + " FROM questoes WHERE id_teste = %s and numero_questao = %s"
+            value = (id_teste, questao)
+            mycursor.execute(sql_command, value)
+            res = mycursor.fetchone()
+            print(res[0])
+            if res[0] == "true":
+                respostas_corretas += 1
 
     if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
         value = ('Aprovado', respostas_corretas, email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s" #, justificativa = %s
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
         value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
@@ -443,7 +447,7 @@ def entrar_vaga_emprego():
         mycursor.execute(sql_command, values)
         db.commit()
         status = "Em andamento"
-        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1) VALUES (%s, %s, %s, %s)"
         values = (email, id_vaga, status, 0)
         mycursor.execute(sql_command, values)
         db.commit()
@@ -775,6 +779,31 @@ def Curso_introdutorio_treinamento():
     for i in range(tamanho):
         ci_treinamento = {
             'ci': ci_treinamentos[i],
+        }
+        lista_enviar.append(ci_treinamento)
+    
+    
+    return jsonify(lista_enviar)
+
+
+@app.route('/curso_avancado_treinamentos', methods=['POST'])
+def Curso_avancado_treinamento():
+
+    id = request.form['id']
+
+    mycursor = db.cursor()
+    sql_command = "SELECT ca FROM treinamentos where Codigo_curso = %s"
+    values = (id,)
+    mycursor.execute(sql_command, values)
+    ci_treinamentos = mycursor.fetchone()
+    
+    lista_enviar = []
+    tamanho = len(ci_treinamentos)
+    
+
+    for i in range(tamanho):
+        ci_treinamento = {
+            'ca': ci_treinamentos[i],
         }
         lista_enviar.append(ci_treinamento)
     
