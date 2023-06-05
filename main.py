@@ -692,7 +692,7 @@ def Update_treinamentos():
 def Delete_treinamentos():
 
     #Recebe o parâmetro passado do frontend
-    codigo_curso = request.form['codigo_curso']
+    codigo_curso = int(request.form['codigo_curso'])
     print(codigo_curso)
 
     #Execução dos comandos no banco de dados
@@ -771,6 +771,86 @@ def Listar_teste():
 
     mycursor = db.cursor() 
     sql_command = "SELECT * FROM questoes where id_teste = %s"
+    value = (id,)
+    mycursor.execute(sql_command, value)
+    questoes = mycursor.fetchall()
+    tamanho_questoes = len(questoes)
+
+    formulario = []
+
+    for i in range(tamanho_questoes):
+        listar_teste = {
+            'id_teste': questoes[i][0],
+            'numero_questao': questoes[i][1],
+            'questao': questoes[i][2],
+            'resposta_a': questoes[i][3],
+            'resposta_b': questoes[i][4],
+            'resposta_c': questoes[i][5],
+            'alternativa_a': questoes[i][6],
+            'alternativa_b': questoes[i][7],
+            'alternativa_c': questoes[i][8]
+        }
+
+        formulario.append(listar_teste)
+    
+    return jsonify(formulario)
+
+
+@app.route('/Listar_teste_prova1', methods=['POST'])
+def Listar_teste_prova1():
+
+    id = request.form['id']
+
+    #mycursor = db.cursor()  
+    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
+    #value = (Nome_comercial,)
+    #mycursor.execute(sql_command, value)
+    #id = mycursor.fetchone()
+    #id = int(id)
+    
+
+    mycursor = db.cursor() 
+    sql_command = "SELECT * FROM questoes_prova1 where id_teste = %s"
+    value = (id,)
+    mycursor.execute(sql_command, value)
+    questoes = mycursor.fetchall()
+    tamanho_questoes = len(questoes)
+
+    formulario = []
+
+    for i in range(tamanho_questoes):
+        listar_teste = {
+            'id_teste': questoes[i][0],
+            'numero_questao': questoes[i][1],
+            'questao': questoes[i][2],
+            'resposta_a': questoes[i][3],
+            'resposta_b': questoes[i][4],
+            'resposta_c': questoes[i][5],
+            'alternativa_a': questoes[i][6],
+            'alternativa_b': questoes[i][7],
+            'alternativa_c': questoes[i][8]
+        }
+
+        formulario.append(listar_teste)
+    
+    return jsonify(formulario)
+
+
+@app.route('/Listar_teste_prova2', methods=['POST'])
+def Listar_teste_prova2():
+
+    id = request.form['id']
+
+    #mycursor = db.cursor()  
+    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
+    #value = (Nome_comercial,)
+    #mycursor.execute(sql_command, value)
+    #id = mycursor.fetchone()
+    #id = int(id)
+    
+
+    mycursor = db.cursor() 
+    sql_command = "SELECT * FROM questoes_prova2 where id_teste = %s"
     value = (id,)
     mycursor.execute(sql_command, value)
     questoes = mycursor.fetchall()
