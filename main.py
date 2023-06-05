@@ -288,7 +288,7 @@ def Listar_inscritos_treinamento():
 
 #Essa Rota serve para que seja criado as questões 
 # do formulário de cada treinamento
-@app.route('/criar_questao', methods=['POST'])
+@app.route('/criar_questao_aptidao', methods=['POST'])
 def criar_questao():
     
     #Recebendo dos parâmetros passados do frontend
@@ -304,7 +304,55 @@ def criar_questao():
 
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()  
-    sql_command = "INSERT INTO questoes (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql_command = "INSERT INTO questoes_aptidao (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
+    mycursor.execute(sql_command, values)
+    db.commit()
+                
+    #resposta = {id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c}
+    return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
+
+@app.route('/criar_questao_prova1', methods=['POST'])
+def criar_questao():
+    
+    #Recebendo dos parâmetros passados do frontend
+    id_teste = request.form['id_treinamento_quiz']
+    n_questao = request.form['questao']
+    t_pergunta = request.form['pergunta']
+    resposta_a = request.form['respostaDaAlternativaA']
+    alternativa_a = request.form['alternativaA']
+    resposta_b = request.form['respostaDaAlternativaB']
+    alternativa_b = request.form['alternativaB']
+    resposta_c = request.form['respostaDaAlternativaC']
+    alternativa_c = request.form['alternativaC']
+
+    #Execução dos comandos no banco de dados
+    mycursor = db.cursor()  
+    sql_command = "INSERT INTO questoes_prova1 (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
+    mycursor.execute(sql_command, values)
+    db.commit()
+                
+    #resposta = {id_teste, n_questao, t_pergunta, resposta_a, alternativa_a, resposta_b, alternativa_b, resposta_c, alternativa_c}
+    return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
+
+@app.route('/criar_questao_prova2', methods=['POST'])
+def criar_questao():
+    
+    #Recebendo dos parâmetros passados do frontend
+    id_teste = request.form['id_treinamento_quiz']
+    n_questao = request.form['questao']
+    t_pergunta = request.form['pergunta']
+    resposta_a = request.form['respostaDaAlternativaA']
+    alternativa_a = request.form['alternativaA']
+    resposta_b = request.form['respostaDaAlternativaB']
+    alternativa_b = request.form['alternativaB']
+    resposta_c = request.form['respostaDaAlternativaC']
+    alternativa_c = request.form['alternativaC']
+
+    #Execução dos comandos no banco de dados
+    mycursor = db.cursor()  
+    sql_command = "INSERT INTO questoes_prova2 (id_teste, numero_questao, questao, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     values = (id_teste, n_questao, t_pergunta, resposta_a, resposta_b, resposta_c, alternativa_a, alternativa_b, alternativa_c)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -313,8 +361,7 @@ def criar_questao():
     return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 
-
-@app.route('/Corrigir_teste', methods=['POST'])
+@app.route('/Corrigir_teste_aptidao', methods=['POST'])
 def Corrigir_Teste():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = request.form['id']
@@ -337,7 +384,7 @@ def Corrigir_Teste():
 
             questao = 'Questão ' + str(index + 1)
         
-            sql_command = "SELECT " + item + " FROM questoes WHERE id_teste = %s and numero_questao = %s"
+            sql_command = "SELECT " + item + " FROM questoes_aptidao WHERE id_teste = %s and numero_questao = %s"
             value = (id_teste, questao)
             mycursor.execute(sql_command, value)
             res = mycursor.fetchone()
@@ -360,6 +407,100 @@ def Corrigir_Teste():
         db.commit()
         return jsonify({'status': 'Reprovado'})
 
+
+
+@app.route('/Corrigir_teste_prova1', methods=['POST'])
+def Corrigir_Teste():
+    respostas_corretas = 0 #numero de respostas corretas
+    id_teste = request.form['id']
+    resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
+
+    resp_list = resp_list.replace("[", "")
+    resp_list = resp_list.replace("]", "")
+    resp_list = resp_list.replace('"', "")
+
+    lista = resp_list.split(",")
+
+    print(lista)
+
+    email = request.form['email'] 
+    mycursor = db.cursor()
+
+    for index, item in enumerate(lista):
+
+        if index < (len(lista)):
+
+            questao = 'Questão ' + str(index + 1)
+        
+            sql_command = "SELECT " + item + " FROM questoes_prova1 WHERE id_teste = %s and numero_questao = %s"
+            value = (id_teste, questao)
+            mycursor.execute(sql_command, value)
+            res = mycursor.fetchone()
+            print(res[0])
+            if res[0] == "true":
+                respostas_corretas += 1
+
+    if respostas_corretas >= (len(lista)) * 0.7:
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
+        value = ('Aprovado', respostas_corretas, email)
+        mycursor.execute(sql_command, value)
+        db.commit()
+        return jsonify({'status': 'Aprovado'})
+    else:
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
+        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
+        mycursor.execute(sql_command, value)
+        db.commit()
+        return jsonify({'status': 'Reprovado'})
+
+
+@app.route('/Corrigir_teste_prova2', methods=['POST'])
+def Corrigir_Teste():
+    respostas_corretas = 0 #numero de respostas corretas
+    id_teste = request.form['id']
+    resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
+
+    resp_list = resp_list.replace("[", "")
+    resp_list = resp_list.replace("]", "")
+    resp_list = resp_list.replace('"', "")
+
+    lista = resp_list.split(",")
+
+    print(lista)
+
+    email = request.form['email'] 
+    mycursor = db.cursor()
+
+    for index, item in enumerate(lista):
+
+        if index < (len(lista)):
+
+            questao = 'Questão ' + str(index + 1)
+        
+            sql_command = "SELECT " + item + " FROM questoes_prova2 WHERE id_teste = %s and numero_questao = %s"
+            value = (id_teste, questao)
+            mycursor.execute(sql_command, value)
+            res = mycursor.fetchone()
+            print(res[0])
+            if res[0] == "true":
+                respostas_corretas += 1
+
+    if respostas_corretas >= (len(lista)) * 0.7:
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
+        value = ('Aprovado', respostas_corretas, email)
+        mycursor.execute(sql_command, value)
+        db.commit()
+        return jsonify({'status': 'Aprovado'})
+    else:
+        print(respostas_corretas)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
+        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
+        mycursor.execute(sql_command, value)
+        db.commit()
+        return jsonify({'status': 'Reprovado'})
 
 #Essa rota serve para qeu seja criada um nova vaga de emprego
 @app.route('/vaga_emprego', methods=['POST'])

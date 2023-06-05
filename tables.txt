@@ -41,7 +41,7 @@ Create table vaga_emprego(
 
 
 
-create table questoes(
+create table questoes_prova2(
 	id_teste int,
     numero_questao varchar(16),
     questao varchar(500),
@@ -53,7 +53,7 @@ create table questoes(
 	alternativa_c varchar(8)
 );
 
-alter table railway.questoes add primary key(questao);
+ALTER TABLE questoes_prova2 ADD CONSTRAINT PK_questoes_prova2 PRIMARY KEY (questao);
 
 
 
