@@ -362,7 +362,7 @@ def criar_questao_prova2():
 
 
 @app.route('/Corrigir_teste_aptidao', methods=['POST'])
-def Corrigir_Teste():
+def Corrigir_Teste_aptidao():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = request.form['id']
     resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
@@ -410,7 +410,7 @@ def Corrigir_Teste():
 
 
 @app.route('/Corrigir_teste_prova1', methods=['POST'])
-def Corrigir_Teste():
+def Corrigir_Teste_prova1():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = request.form['id']
     resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
@@ -457,7 +457,7 @@ def Corrigir_Teste():
 
 
 @app.route('/Corrigir_teste_prova2', methods=['POST'])
-def Corrigir_Teste():
+def Corrigir_Teste_prova2():
     respostas_corretas = 0 #numero de respostas corretas
     id_teste = request.form['id']
     resp_list = request.form['lista_respostas'] #lista com as respostas do aluno
