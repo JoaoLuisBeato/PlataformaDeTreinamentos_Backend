@@ -235,8 +235,8 @@ def entrar_treinamento():
             mycursor.execute(sql_command, value)
             db.commit()
             status = "Em andamento"
-            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
-            values = (email, codigo_treinamento, status, 0)
+            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1, nota_2, nota_3) VALUES (%s, %s, %s, %s)"
+            values = (email, codigo_treinamento, status, 0, 0, 0)
             mycursor.execute(sql_command, values)
             db.commit()
             print("%s Registrado com sucesso no curso %s", email, codigo_treinamento)
@@ -343,14 +343,14 @@ def Corrigir_Teste():
 
     if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s"
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
         value = ('Aprovado', respostas_corretas, email)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota = %s WHERE email = %s" #, justificativa = %s
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
         value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
@@ -443,7 +443,7 @@ def entrar_vaga_emprego():
         mycursor.execute(sql_command, values)
         db.commit()
         status = "Em andamento"
-        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota) VALUES (%s, %s, %s, %s)"
+        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1) VALUES (%s, %s, %s, %s)"
         values = (email, id_vaga, status, 0)
         mycursor.execute(sql_command, values)
         db.commit()
