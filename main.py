@@ -289,7 +289,7 @@ def Listar_inscritos_treinamento():
 #Essa Rota serve para que seja criado as questões 
 # do formulário de cada treinamento
 @app.route('/criar_questao_aptidao', methods=['POST'])
-def criar_questao():
+def criar_questao_aptidao():
     
     #Recebendo dos parâmetros passados do frontend
     id_teste = request.form['id_treinamento_quiz']
@@ -313,7 +313,7 @@ def criar_questao():
     return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 @app.route('/criar_questao_prova1', methods=['POST'])
-def criar_questao():
+def criar_questao_prova1():
     
     #Recebendo dos parâmetros passados do frontend
     id_teste = request.form['id_treinamento_quiz']
@@ -337,7 +337,7 @@ def criar_questao():
     return jsonify({'message': 'Lista de objetos recebida com sucesso!'})
 
 @app.route('/criar_questao_prova2', methods=['POST'])
-def criar_questao():
+def criar_questao_prova2():
     
     #Recebendo dos parâmetros passados do frontend
     id_teste = request.form['id_treinamento_quiz']
