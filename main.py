@@ -1090,10 +1090,10 @@ def Listar_historio_para_mentor():
     tamanho = len(res_list)
     for i in range(tamanho):
         usuarios = {
-            'email': historico[i][0],
-            'Codigo do curso': historico[i][1],
-            'Status': historico[i][2],
-            'Nota': historico[i][3]
+            'email': res_list[i][0],
+            'Codigo do curso': res_list[i][1],
+            'Status': res_list[i][2],
+            'Nota': res_list[i][3]
         }
         lista_historico.append(usuarios)
 
