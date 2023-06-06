@@ -796,6 +796,21 @@ def Delete_treinamentos():
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
 
+    sql_command = "DELETE FROM questoes_prova2 WHERE id_teste = %s"
+    values = (codigo_curso,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+    sql_command = "DELETE FROM questoes_prova1 WHERE id_teste = %s"
+    values = (codigo_curso,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
+    sql_command = "DELETE FROM questoes_aptidao WHERE id_teste = %s"
+    values = (codigo_curso,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
     sql_command = "DELETE FROM treinamento_alunos WHERE codigo_treinamento = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
@@ -829,6 +844,10 @@ def update_vaga():
     
     return jsonify({'Update_vaga': 'Update com sucesso'})
 
+
+
+
+
 # Essa rota serve para deletar um vaga de emprego
 @app.route('/Delete_vagas', methods=['POST'])
 def Delete_vagas():
@@ -844,17 +863,10 @@ def Delete_vagas():
     db.commit()
 
     mycursor = db.cursor()
-    sql_command = "DELETE FROM treinamentos WHERE Codigo_curso = %s"
+    sql_command = "DELETE FROM vaga_empresa WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
-
-    
-    sql_command = "DELETE FROM questoes WHERE id_teste = %s"
-    values = (codigo_vagas,)
-    mycursor.execute(sql_command, values)
-    db.commit()
-
 
     return jsonify({'Delete_vaga': 'Delete com sucesso'})
 
