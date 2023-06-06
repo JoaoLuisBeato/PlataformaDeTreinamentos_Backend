@@ -868,6 +868,12 @@ def Delete_vagas():
     mycursor.execute(sql_command, values)
     db.commit()
 
+    mycursor = db.cursor()
+    sql_command = "DELETE FROM usuario_vaga WHERE id_vaga = %s"
+    values = (codigo_vagas,)
+    mycursor.execute(sql_command, values)
+    db.commit()
+
     return jsonify({'Delete_vaga': 'Delete com sucesso'})
 
 
@@ -1043,6 +1049,8 @@ def Listar_treinamentos_id():
     print(lista_treinamento)
     return jsonify(lista_treinamento)
 
+
+
 @app.route('/Listar_usuarios_para_mentor', methods=['POST'])
 def Listar_usuarios_para_mentor():
     mycursor = db.cursor()
@@ -1061,6 +1069,30 @@ def Listar_usuarios_para_mentor():
 
     print(lista_usuarios)
     return jsonify(lista_usuarios)
+
+
+
+
+
+@app.route('/Listar_historio_para_mentor', methods=['POST'])
+def Listar_historio_para_mentor():
+    mycursor = db.cursor()
+    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
+    mycursor.execute(sql_command)
+    res_list = mycursor.fetchall()
+
+    lista_usuarios = []
+
+    tamanho = len(res_list)
+    for i in range(tamanho):
+        usuarios = {
+            'email': res_list[i][0],
+        }
+        lista_usuarios.append(usuarios)
+
+    print(lista_usuarios)
+    return jsonify(lista_usuarios)
+
 
 
 @app.route('/vaga_empresa_criar', methods=['POST'])
