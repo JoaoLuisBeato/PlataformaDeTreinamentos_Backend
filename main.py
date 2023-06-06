@@ -1076,22 +1076,48 @@ def Listar_usuarios_para_mentor():
 
 @app.route('/Listar_historio_para_mentor', methods=['POST'])
 def Listar_historio_para_mentor():
+
+    email = request.form['email']
+
     mycursor = db.cursor()
-    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
-    mycursor.execute(sql_command)
+    sql_command = "SELECT * from treinamento_alunos WHERE email = %s" 
+    values = (email,)
+    mycursor.execute(sql_command, values)
     res_list = mycursor.fetchall()
 
-    lista_usuarios = []
+    lista_historico = []
 
     tamanho = len(res_list)
     for i in range(tamanho):
         usuarios = {
-            'email': res_list[i][0],
+            'email': historico[i][0],
+            'Codigo do curso': historico[i][1],
+            'Status': historico[i][2],
+            'Nota': historico[i][3]
         }
-        lista_usuarios.append(usuarios)
+        lista_historico.append(usuarios)
 
-    print(lista_usuarios)
-    return jsonify(lista_usuarios)
+    print("\n antes de inveter \n\n")
+    print(lista_historico)
+
+    lista_historico = list(reversed(lista_historico))
+
+    print("\n depois de inveter \n\n")
+    print(lista_historico)
+    print(len(lista_historico))
+
+
+    if len(lista_historico) > 10:
+        lista_historico = lista_historico[:10]
+        print(lista_historico)
+        return jsonify(lista_historico)
+    else:
+        print(lista_historico)
+        return jsonify(lista_historico)
+
+
+
+    
 
 
 
