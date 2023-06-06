@@ -581,18 +581,9 @@ def entrar_vaga_emprego():
     if email_check is not None:
         print("ja esta inscrito nessa vaga!")
         return jsonify({'status': False})
-    else:
-        status = "Nao aprovado"
-        sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) VALUES (%s, %s, %s)"
-        values = (email, id_vaga, status)
-        mycursor.execute(sql_command, values)
-        db.commit()
-        status = "Em andamento"
-        sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1) VALUES (%s, %s, %s, %s)"
-        values = (email, id_vaga, status, 0)
-        mycursor.execute(sql_command, values)
-        db.commit()
-        return jsonify({'entrar_emprego_status': True})
+    # colocar que o mano vai entrar
+    return jsonify({'status': True})
+
 
 
 @app.route('/sair_vaga_emprego', methods=['POST'])
@@ -770,7 +761,7 @@ def Listar_teste():
     
 
     mycursor = db.cursor() 
-    sql_command = "SELECT * FROM questoes where id_teste = %s"
+    sql_command = "SELECT * FROM questoes_aptidao where id_teste = %s"
     value = (id,)
     mycursor.execute(sql_command, value)
     questoes = mycursor.fetchall()
@@ -792,6 +783,8 @@ def Listar_teste():
         }
 
         formulario.append(listar_teste)
+
+    print(formulario)
     
     return jsonify(formulario)
 
