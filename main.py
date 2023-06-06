@@ -576,12 +576,19 @@ def entrar_vaga_emprego():
     email = request.form['email']
     sql_command = "SELECT email FROM usuario_vaga WHERE id_vaga = %s and email = %s"
     values = (id_vaga, email)
+    
     mycursor.execute(sql_command, values)
     email_check = mycursor.fetchone()
     if email_check is not None:
         print("ja esta inscrito nessa vaga!")
         return jsonify({'status': False})
     # colocar que o mano vai entrar
+    
+    status = 'Em andamento'
+    sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) values (%s, %s, %s)"
+    values = (email, id_vaga, status)
+    mycursor.execute(sql_command, values)
+    db.commit()
     return jsonify({'status': True})
 
 
