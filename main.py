@@ -796,7 +796,7 @@ def Delete_treinamentos():
     #Execução dos comandos no banco de dados
     mycursor = db.cursor()
 
-    sql_command = "DELETE FROM treinamento_alunos WHERE Codigo_curso = %s"
+    sql_command = "DELETE FROM treinamento_alunos WHERE codigo_treinamento = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
     db.commit()
