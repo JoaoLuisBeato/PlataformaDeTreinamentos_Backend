@@ -632,6 +632,9 @@ def vaga_emprego():
     return jsonify({'vaga_emprego': vaga_emprego})
 
 
+
+
+
 # Essa rota serve para buscar todas vagas criadas busca 
 #  as informações de todas as vagas armazenadas no banco
 #  e passa as informações para o frontend
@@ -667,6 +670,9 @@ def listar_vagas():
     return jsonify(listaVagas)
 
 
+
+
+
 #Essa rota serve para vincular um usuário a uma vaga de emprego
 @app.route('/entrar_vaga_emprego', methods=['POST'])
 def entrar_vaga_emprego():
@@ -676,14 +682,15 @@ def entrar_vaga_emprego():
     email = request.form['email']
     sql_command = "SELECT email FROM usuario_vaga WHERE id_vaga = %s and email = %s"
     values = (id_vaga, email)
-    
     mycursor.execute(sql_command, values)
     email_check = mycursor.fetchone()
+
+    # Verifica se o usuário já está vinculado a aquela vaga
     if email_check is not None:
         print("ja esta inscrito nessa vaga!")
         return jsonify({'status': False})
-    # colocar que o mano vai entrar
     
+    # Caso não esteja vinculado, o usuario é cadastrado na vaga
     status = 'Em andamento'
     sql_command = "Insert into usuario_vaga (email, id_vaga, situacao) values (%s, %s, %s)"
     values = (email, id_vaga, status)
@@ -693,60 +700,92 @@ def entrar_vaga_emprego():
 
 
 
+
+
+# Essa rota serve para desvincular um usuário de uma vaga
 @app.route('/sair_vaga_emprego', methods=['POST'])
 def sair_vaga_emprego():
-
+    
+    #Recebe os parâmetros de id da vaga e email do usuário
     id_vaga = request.form['id_vaga']
     email = request.form['email']
     
+    #Procura na tabela se o usuário realmente está nessa vaga
     mycursor = db.cursor()
     sql_command = "SELECT * FROM usuario_vaga WHERE id_vaga = %s and email = %s"
     values = (id_vaga, email)
     mycursor.execute(sql_command, values)
     email_check = mycursor.fetchone()
 
+    # Caso esteja, faz a remoção desse usuário
     if email_check is not None:
-
         sql_command = "DELETE FROM usuario_vaga WHERE id_vaga = %s AND email = %s"
         values = (id_vaga, email)
         mycursor.execute(sql_command, values)
         db.commit()
         return jsonify({'sair_emprego_status': 'True'})
+    
+    # Caso não, apenas retorna como false
     else:
         return jsonify({'sair_emprego_status': 'False'})
+
+
+
 
 
 #Essa rota serve para buscar os usuários inscritos
 # em uma determinada vaga
 @app.route('/Listar_inscritos_vaga', methods=['POST'])
 def Listar_inscritos_vaga():
+
+    # Recebe o parâmetro de qual vaga para buscar
     id_vaga = request.form['id']
+
+    # Busca na tabela, todos que tem o mesmo ID da vaga
     mycursor = db.cursor()
-    sql_command = "SELECT email from usuario_vaga WHERE id_vaga = %s"
+    sql_command = "SELECT nome FROM usuarios WHERE email IN (SELECT email from usuario_vaga WHERE id_vaga = %s)"
     values = (id_vaga,)
     mycursor.execute(sql_command, values)
     listar_inscritos_vaga = mycursor.fetchall()
+
+    # declaração da lista
     lista_arr = []
     tamanho = len(listar_inscritos_vaga)
+    
+    # Monta uma lista de nome vinculados aquela vaga 
     for i in range(tamanho):
         vaga = {
             'email': listar_inscritos_vaga[i][0],
         }
         lista_arr.append(vaga)
-        print(lista_arr)
+        print(lista_arr) # Print para Debug
+
+    # retorna a lista depois que pronta
     return jsonify(lista_arr)
 
 
+
+
+
+#Essa rota tem a finalidade de retornar os resultado dos testes que ele fez
 @app.route('/Historico_aluno', methods=['POST'])
 def historico():
+
+    # Recebe o parâmetro de qual aluno buscar os resultados 
     email = request.form['email']
+
+    # Realiza busca dos parâmetros do trienamento daquele aluno
     mycursor = db.cursor()
     sql_command = "SELECT * from treinamento_alunos WHERE email = %s" ##treinamento_alunos = (email (varchar), codigo_curso (varchar), status (varchar), justificativa (varchar))
     values = (email,)
     mycursor.execute(sql_command, values)
     historico = mycursor.fetchall()
+
+    # declaração da lista
     historico_list = []
     tamanho = len(historico)
+    
+    # Monta uma lista com os atributos daquele aluno para cada treinamento
     for i in range(tamanho):
         historico_env = {
             'email': historico[i][0],
@@ -756,6 +795,9 @@ def historico():
         }
         historico_list.append(historico_env)
     return jsonify(historico_list)
+
+
+
 
 
 # Essa rota serve para que possam ser feitas atualizações
