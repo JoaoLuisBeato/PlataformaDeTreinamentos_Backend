@@ -30,8 +30,8 @@ ALTER TABLE railway.treinamentos ADD PRIMARY KEY (Codigo_curso);
 
 
 Create table vaga_emprego(
-	id int AUTO_INCREMENT PRIMARY KEY,
-	Titulo_vaga varchar(200),
+	  id int AUTO_INCREMENT PRIMARY KEY,
+	  Titulo_vaga varchar(200),
     Empresa_oferece varchar(300),
     Descricao_vaga varchar(500),
     Pre_requisito varchar(300),
@@ -41,8 +41,8 @@ Create table vaga_emprego(
 
 
 
-create table questoes(
-	id_teste int,
+create table questoes_prova2(
+	  id_teste int,
     numero_questao varchar(16),
     questao varchar(500),
     resposta_a varchar(300),
@@ -50,10 +50,10 @@ create table questoes(
     resposta_c varchar(300),
     alternativa_a varchar(8),
     alternativa_b varchar(8),
-	alternativa_c varchar(8)
+	  alternativa_c varchar(8)
 );
 
-alter table railway.questoes add primary key(questao);
+ALTER TABLE questoes_prova2 ADD CONSTRAINT PK_questoes_prova2 PRIMARY KEY (questao);
 
 
 
