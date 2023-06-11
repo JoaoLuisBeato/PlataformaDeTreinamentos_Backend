@@ -257,24 +257,36 @@ def entrar_treinamento():
             return jsonify({'registro_treinamento': False})
         
         else: #se ainda há vagas disponíveis
-
-            # É feito um update na tabela de treinamento onde a quantidade atual de alunos
-            #  inscritos é atualizada
-            sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual + 1 WHERE Codigo_curso = %s" #incrementa em 1 a quantidade atual no curso desejado
-            value = (codigo_treinamento,)
+            
+            mycursor = db.cursor()
+            sql_command = "SELECT * FROM treinamento_alunos where codigo_treinamento = %s AND email = %s"
+            value = (codigo_treinamento, email)
             mycursor.execute(sql_command, value)
-            db.commit()
+            verificacao = mycursor.fetchone()
+            
+            if verificacao is None:
 
-            # Na tabela de treinamento_alunos, é feita a inserção do aluno com o treinamento
-            #  mostrando que a relação foi feita, e além disso, recebe o status como "Em andamento"
-            status = "Em andamento"
-            sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1, nota_2, nota_3) VALUES (%s, %s, %s, %s, %s, %s)"
-            values = (email, codigo_treinamento, status, 0, 0, 0)
-            mycursor.execute(sql_command, values)
-            db.commit()
+                # É feito um update na tabela de treinamento onde a quantidade atual de alunos
+                #  inscritos é atualizada
+                sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual + 1 WHERE Codigo_curso = %s" #incrementa em 1 a quantidade atual no curso desejado
+                value = (codigo_treinamento,)
+                mycursor.execute(sql_command, value)
+                db.commit()
 
-            print("%s Registrado com sucesso no curso %s", email, codigo_treinamento) #Print de debug
-            return jsonify({'registro_treinamento': True}) #retorna True para o flutter
+                # Na tabela de treinamento_alunos, é feita a inserção do aluno com o treinamento
+                #  mostrando que a relação foi feita, e além disso, recebe o status como "Em andamento"
+                status = "Em andamento"
+                sql_command = "INSERT INTO treinamento_alunos (email, codigo_treinamento, status, nota_1, nota_2, nota_3) VALUES (%s, %s, %s, %s, %s, %s)"
+                values = (email, codigo_treinamento, status, 0, 0, 0)
+                mycursor.execute(sql_command, values)
+                db.commit()
+
+                print("%s Registrado com sucesso no curso %s", email, codigo_treinamento) #Print de debug
+                return jsonify({'registro_treinamento': True}) #retorna True para o flutter
+            
+            else:
+                return jsonify({'registro_treinamento': False}) #se for nulo
+            
 
     else:
         return jsonify({'registro_treinamento': False}) #se for nulo
@@ -290,22 +302,30 @@ def sair_treinamento():
     email = request.form['email'] #pega o email do usuario
     codigo_treinamento = request.form['codigo_curso'] #pega o curso desejado
 
-    #Execução dos comandos no banco de dados
-    # Faz a deleção na tabela de treinamento_alunos com base no email e no codigo do curso
     mycursor = db.cursor()
-    sql_command = "DELETE FROM treinamento_alunos WHERE email = %s AND codigo_treinamento = %s"
-    value = (email, codigo_treinamento)
+    sql_command = "SELECT * FROM treinamento_alunos where codigo_treinamento = %s AND email = %s"
+    value = (codigo_treinamento, email)
     mycursor.execute(sql_command, value)
-    db.commit()
+    verificacao = mycursor.fetchone()
+            
+    if verificacao is not None:
+        #Execução dos comandos no banco de dados
+        # Faz a deleção na tabela de treinamento_alunos com base no email e no codigo do curso
+        mycursor = db.cursor()
+        sql_command = "DELETE FROM treinamento_alunos WHERE email = %s AND codigo_treinamento = %s"
+        value = (email, codigo_treinamento)
+        mycursor.execute(sql_command, value)
+        db.commit()
+        
+        #Execução dos comandos no banco de dados
+        # Diminui um na contagem de quantidade da alunos no treinamento
+        sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual -1 WHERE Codigo_curso = %s"
+        value = (codigo_treinamento,)
+        mycursor.execute(sql_command, value)
+        db.commit()
+        return jsonify({'status_delete' : 'Deletado com sucesso!'})
     
-    #Execução dos comandos no banco de dados
-    # Diminui um na contagem de quantidade da alunos no treinamento
-    sql_command = "UPDATE treinamentos SET qntd_atual = qntd_atual -1 WHERE Codigo_curso = %s"
-    value = (codigo_treinamento,)
-    mycursor.execute(sql_command, value)
-    db.commit()
-
-    return jsonify({'status_delete' : 'Deletado com sucesso!'})
+    return jsonify({'status_delete' : 'Erro ao deletar!'})
 
 
 
