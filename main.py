@@ -827,6 +827,9 @@ def Update_treinamentos():
     return jsonify({'Update_treinamento': 'Update com sucesso'})
 
 
+
+
+
 # Essa rota serve para que os trienamentos possam ser deletados
 @app.route('/Delete_treinamentos', methods=['POST'])
 def Delete_treinamentos():
@@ -836,8 +839,8 @@ def Delete_treinamentos():
     print(codigo_curso)
 
     #Execução dos comandos no banco de dados
+    #Primeiro são deletados todas as questões vinculadas aquele trinamento
     mycursor = db.cursor()
-
     sql_command = "DELETE FROM questoes_prova2 WHERE id_teste = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
@@ -853,12 +856,13 @@ def Delete_treinamentos():
     mycursor.execute(sql_command, values)
     db.commit()
 
+    # Em seguida removemos todos os alunos daquele treinamento
     sql_command = "DELETE FROM treinamento_alunos WHERE codigo_treinamento = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
     db.commit()
 
-
+    # por fim removemos aquele treinamento do banco
     sql_command = "DELETE FROM treinamentos WHERE Codigo_curso = %s"
     values = (codigo_curso,)
     mycursor.execute(sql_command, values)
@@ -866,6 +870,10 @@ def Delete_treinamentos():
     return jsonify('Deletado com sucesso!')
 
 
+
+
+
+# Essa rota serve para fazer o update das vagas
 @app.route('/Update_vaga', methods=['POST'])
 def update_vaga():
     #Recebe o parâmetro passado do frontend
@@ -878,8 +886,9 @@ def update_vaga():
     salario_maximo = int(request.form['salario_maximo'])
 
     #Execução dos comandos no banco de dados
+    #atualiza todos os parâmetros a serem atualizados
     mycursor = db.cursor()
-    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id = %s"
+    sql_command = "UPDATE vaga_emprego SET Titulo_vaga = %s, Empresa_oferece = %s, Descricao_vaga = %s, Pre_requisito = %s, Salario_minimo = %s, Salario_maximo = %s where id_vaga = %s"
     values = (titulo_vaga, empresa_oferece, descricao_vaga, pre_requisitos, salario_minimo, salario_maximo, id_vaga)
     mycursor.execute(sql_command, values)
     db.commit()
@@ -894,22 +903,25 @@ def update_vaga():
 @app.route('/Delete_vagas', methods=['POST'])
 def Delete_vagas():
 
-
-    #Execução dos comandos no banco de dados
+    # Recebemos os parâmetros da vaga
     codigo_vagas = request.form['codigo_vaga']
 
+    #Execução dos comandos no banco de dados
+    #Deletamos a vaga_emprego
     mycursor = db.cursor()
     sql_command = "DELETE FROM vaga_emprego WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
 
+    #Deletamos a a empresa vinculada a vaga
     mycursor = db.cursor()
     sql_command = "DELETE FROM vaga_empresa WHERE id_vaga = %s"
     values = (codigo_vagas,)
     mycursor.execute(sql_command, values)
     db.commit()
 
+    #deletamos os usuarios vinculador a vaga
     mycursor = db.cursor()
     sql_command = "DELETE FROM usuario_vaga WHERE id_vaga = %s"
     values = (codigo_vagas,)
@@ -921,28 +933,25 @@ def Delete_vagas():
 
 
 
+
+#Essa rota serve para mostrar o teste de aptidao para frontend
 @app.route('/Listar_teste', methods=['POST'])
 def Listar_teste():
 
+    #Recebe os parâmetros de id do treinamento
     id = request.form['id']
-
-    #mycursor = db.cursor()  
-    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
-    #value = (Nome_comercial,)
-    #mycursor.execute(sql_command, value)
-    #id = mycursor.fetchone()
-    #id = int(id)
     
-
+    #Busca as perguntas do teste de aptidao daquele treinamento
     mycursor = db.cursor() 
     sql_command = "SELECT * FROM questoes_aptidao where id_teste = %s"
     value = (id,)
     mycursor.execute(sql_command, value)
     questoes = mycursor.fetchall()
-    tamanho_questoes = len(questoes)
+    
 
     formulario = []
-
+    tamanho_questoes = len(questoes)
+    # Retornamos para o frontend todas aqueles parâmetros para mostrar o teste
     for i in range(tamanho_questoes):
         listar_teste = {
             'id_teste': questoes[i][0],
@@ -958,33 +967,32 @@ def Listar_teste():
 
         formulario.append(listar_teste)
 
-    print(formulario)
+    print(formulario) # print de debug
     
     return jsonify(formulario)
 
 
+
+
+
+#Essa rota serve para mostrar o teste 1 para frontend
 @app.route('/Listar_teste_prova1', methods=['POST'])
 def Listar_teste_prova1():
 
+    #Recebe os parâmetros de id do treinamento
     id = request.form['id']
 
-    #mycursor = db.cursor()  
-    #sql_command = "SELECT Codigo_curso from treinamentos where Nome_Comercial = %s"
-    #value = (Nome_comercial,)
-    #mycursor.execute(sql_command, value)
-    #id = mycursor.fetchone()
-    #id = int(id)
-    
-
+    #Busca as perguntas do teste 1 daquele treinamento
     mycursor = db.cursor() 
     sql_command = "SELECT * FROM questoes_prova1 where id_teste = %s"
     value = (id,)
     mycursor.execute(sql_command, value)
     questoes = mycursor.fetchall()
-    tamanho_questoes = len(questoes)
+    
 
     formulario = []
-
+    tamanho_questoes = len(questoes)
+    # Retornamos para o frontend todas aqueles parâmetros para mostrar o teste
     for i in range(tamanho_questoes):
         listar_teste = {
             'id_teste': questoes[i][0],
@@ -999,13 +1007,17 @@ def Listar_teste_prova1():
         }
 
         formulario.append(listar_teste)
-    
     return jsonify(formulario)
 
 
+
+
+
+#Essa rota serve para mostrar o teste 2 para frontend
 @app.route('/Listar_teste_prova2', methods=['POST'])
 def Listar_teste_prova2():
 
+    #Recebe os parâmetros de id do treinamento
     id = request.form['id']
 
     #mycursor = db.cursor()  
@@ -1015,16 +1027,17 @@ def Listar_teste_prova2():
     #id = mycursor.fetchone()
     #id = int(id)
     
-
+    #Busca as perguntas do teste 2 daquele treinamento
     mycursor = db.cursor() 
     sql_command = "SELECT * FROM questoes_prova2 where id_teste = %s"
     value = (id,)
     mycursor.execute(sql_command, value)
     questoes = mycursor.fetchall()
-    tamanho_questoes = len(questoes)
+    
 
     formulario = []
-
+    tamanho_questoes = len(questoes)
+    # Retornamos para o frontend todas aqueles parâmetros para mostrar o teste
     for i in range(tamanho_questoes):
         listar_teste = {
             'id_teste': questoes[i][0],
@@ -1043,19 +1056,29 @@ def Listar_teste_prova2():
     return jsonify(formulario)
 
 
+
+
+
+#Essa rota serve para mostrar as vagas para os alunos depois de aprovado no treinamento
 @app.route('/Listar_vaga_aluno', methods=['POST'])
 def Listar_vaga_alunos():
-    mycursor = db.cursor() 
+    
+    #Recebe os parâmetros de id do treinamento
     email = request.form['email']
 
+    #Busca as vagas disponíveis para cada treinamento que o aluno foi aprovado
+    mycursor = db.cursor()
     status = 'Aprovado'
     sql_command = "SELECT * FROM vaga_emprego where id_vaga in (SELECT codigo_treinamento FROM treinamento_alunos where email = %s AND status = %s)"
     value = (email, status)
     mycursor.execute(sql_command, value)
     res_list = mycursor.fetchall()
+
+
     tamanho = len(res_list)
     lista_res = []
 
+    # Retornamos para o frontend as vagas vinculadas aquele treinamento
     for i in range(tamanho):
         listagem_vaga = {
             'id': res_list[i][0],
@@ -1071,6 +1094,11 @@ def Listar_vaga_alunos():
     print(lista_res)
     return jsonify(lista_res)
 
+
+
+
+
+#Essa rota serve para mostrar aos usuários os 
 @app.route('/Listar_treinamentos_id', methods=['POST'])
 def Listar_treinamentos_id():
     mycursor = db.cursor()
@@ -1093,16 +1121,21 @@ def Listar_treinamentos_id():
 
 
 
+
+
+#Essa rota serve para listar todos os alunso para o mentor escolher um para analisar
 @app.route('/Listar_usuarios_para_mentor', methods=['POST'])
 def Listar_usuarios_para_mentor():
+    #Busca na tabele de usários todos aqule que são Alunos
     mycursor = db.cursor()
-    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
+    sql_command = "SELECT nome FROM usuarios where tipo_usuario = 'Aluno'"
     mycursor.execute(sql_command)
     res_list = mycursor.fetchall()
 
     lista_usuarios = []
-
     tamanho = len(res_list)
+
+    #Retorna para o frontend o nomes do alunos
     for i in range(tamanho):
         usuarios = {
             'email': res_list[i][0],
@@ -1116,9 +1149,10 @@ def Listar_usuarios_para_mentor():
 
 
 
+# Essa rota retorna as 10 ultimas atividades para o mentor
 @app.route('/Listar_historio_para_mentor', methods=['POST'])
 def Listar_historio_para_mentor():
-
+    # recebendo os parâmetros 
     email = request.form['email']
 
     mycursor = db.cursor()
@@ -1128,8 +1162,9 @@ def Listar_historio_para_mentor():
     res_list = mycursor.fetchall()
 
     lista_historico = []
-
     tamanho = len(res_list)
+
+    #Retorna para o mentor as atividade daquele aluno
     for i in range(tamanho):
         usuarios = {
             'email': res_list[i][0],
@@ -1159,12 +1194,13 @@ def Listar_historio_para_mentor():
 
 
 
-    
 
 
-
+#Essa rota serve para vincular uma vaga a uma empresa
 @app.route('/vaga_empresa_criar', methods=['POST'])
 def vaga_empresa_criar():
+
+    #Rebebe os parâmetros do frontend da vga e da empresa
     mycursor = db.cursor()
     id_empresa = request.form['id_empresa']
     email_empresa = request.form['email_empresa']
@@ -1172,6 +1208,8 @@ def vaga_empresa_criar():
     values = (email_empresa, id_empresa)
     mycursor.execute(sql_command, values)
     db.commit()
+
+    # Retorna para o front o status de OK
     return jsonify({'status': 'OK'})
 
 
@@ -1201,11 +1239,18 @@ def vaga_empresa_listar():
     
     return jsonify(lista_enviar)
 
+
+
+
+
+#Essa rota serve para mostrar o curso introdutorio no treinamento
 @app.route('/curso_introdutorio_treinamentos', methods=['POST'])
 def Curso_introdutorio_treinamento():
 
+    # Recebe qual o id de qual treinamento esse curso faz parte
     id = request.form['id']
 
+    # faz a busca no banco de dados do curso introdutorio
     mycursor = db.cursor()
     sql_command = "SELECT ci FROM treinamentos where Codigo_curso = %s"
     values = (id,)
@@ -1215,22 +1260,27 @@ def Curso_introdutorio_treinamento():
     lista_enviar = []
     tamanho = len(ci_treinamentos)
     
-
+    #Retorna o texto daquele treinamento enviado
     for i in range(tamanho):
         ci_treinamento = {
             'ci': ci_treinamentos[i],
         }
         lista_enviar.append(ci_treinamento)
     
-    
     return jsonify(lista_enviar)
 
 
+
+
+
+#Essa rota serve para mostrar o curso avancado no treinamento
 @app.route('/curso_avancado_treinamentos', methods=['POST'])
 def Curso_avancado_treinamento():
 
+    # Recebe qual o id de qual treinamento esse curso faz parte
     id = request.form['id']
 
+    # faz a busca no banco de dados do curso avancao
     mycursor = db.cursor()
     sql_command = "SELECT ca FROM treinamentos where Codigo_curso = %s"
     values = (id,)
@@ -1240,7 +1290,7 @@ def Curso_avancado_treinamento():
     lista_enviar = []
     tamanho = len(ci_treinamentos)
     
-
+    #Retorna o texto daquele treinamento enviado
     for i in range(tamanho):
         ci_treinamento = {
             'ca': ci_treinamentos[i],
