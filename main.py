@@ -259,7 +259,7 @@ def entrar_treinamento():
         else: #se ainda há vagas disponíveis
             
             mycursor = db.cursor()
-            sql_command = "SELECT * FROM treinamento_alunos where id = %s AND email = %s"
+            sql_command = "SELECT * FROM treinamento_alunos where codigo_treinamento = %s AND email = %s"
             value = (codigo_treinamento, email)
             mycursor.execute(sql_command, value)
             verificacao = mycursor.fetchone()
@@ -284,6 +284,9 @@ def entrar_treinamento():
                 print("%s Registrado com sucesso no curso %s", email, codigo_treinamento) #Print de debug
                 return jsonify({'registro_treinamento': True}) #retorna True para o flutter
             
+            else:
+                return jsonify({'registro_treinamento': False}) #se for nulo
+            
 
     else:
         return jsonify({'registro_treinamento': False}) #se for nulo
@@ -300,7 +303,7 @@ def sair_treinamento():
     codigo_treinamento = request.form['codigo_curso'] #pega o curso desejado
 
     mycursor = db.cursor()
-    sql_command = "SELECT * FROM treinamento_alunos where id = %s AND email = %s"
+    sql_command = "SELECT * FROM treinamento_alunos where codigo_treinamento = %s AND email = %s"
     value = (codigo_treinamento, email)
     mycursor.execute(sql_command, value)
     verificacao = mycursor.fetchone()
