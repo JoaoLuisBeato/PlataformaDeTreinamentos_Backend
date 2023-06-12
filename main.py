@@ -1148,7 +1148,7 @@ def Listar_treinamentos_id():
 def Listar_usuarios_para_mentor():
     #Busca na tabele de usários todos aqule que são Alunos
     mycursor = db.cursor()
-    sql_command = "SELECT nome FROM usuarios where tipo_usuario = 'Aluno'"
+    sql_command = "SELECT email FROM usuarios where tipo_usuario = 'Aluno'"
     mycursor.execute(sql_command)
     res_list = mycursor.fetchall()
 
