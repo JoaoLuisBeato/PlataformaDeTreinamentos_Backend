@@ -497,8 +497,8 @@ def Corrigir_Teste_aptidao():
         print(respostas_corretas) # print de debug
 
         # Atualiza o a nota do usuário na tabela treinamento_alunos
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
-        value = ('Aprovado', respostas_corretas, email)
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s AND codigo_treinamento = %s"
+        value = ('Aprovado', respostas_corretas, email, id_teste)
         mycursor.execute(sql_command, value)
         db.commit()
 
@@ -507,8 +507,8 @@ def Corrigir_Teste_aptidao():
     else:
         print(respostas_corretas)
         # Atualiza o a nota do usuário na tabela treinamento_alunos
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
-        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
+        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s AND codigo_treinamento = %s" #, justificativa = %s
+        value = ('Reprovado, acertos insuficientes', respostas_corretas, email, id_teste) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
 
@@ -552,15 +552,15 @@ def Corrigir_Teste_prova1():
 
     if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
-        value = ('Aprovado', respostas_corretas, email)
+        sql_command = "UPDATE treinamento_alunos SET nota_2 = %s WHERE email = %s AND codigo_treinamento = %s"
+        value = (respostas_corretas, email, id_teste)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
-        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
+        sql_command = "UPDATE treinamento_alunos SET nota_2 = %s WHERE email = %s AND codigo_treinamento = %s" #, justificativa = %s
+        value = (respostas_corretas, email, id_teste) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Reprovado'})
@@ -603,15 +603,15 @@ def Corrigir_Teste_prova2():
 
     if respostas_corretas >= (len(lista)) * 0.7:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s"
-        value = ('Aprovado', respostas_corretas, email)
+        sql_command = "UPDATE treinamento_alunos SET nota_3 = %s WHERE email = %s AND codigo_treinamento = %s"
+        value = (respostas_corretas, email, id_teste)
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Aprovado'})
     else:
         print(respostas_corretas)
-        sql_command = "UPDATE treinamento_alunos SET status = %s, nota_1 = %s WHERE email = %s" #, justificativa = %s
-        value = ('Reprovado, acertos insuficientes', respostas_corretas, email) #, 'Acertos insuficientes'
+        sql_command = "UPDATE treinamento_alunos SET nota_3 = %s WHERE email = %s AND codigo_treinamento = %s" #, justificativa = %s
+        value = (respostas_corretas, email, id_teste) #, 'Acertos insuficientes'
         mycursor.execute(sql_command, value)
         db.commit()
         return jsonify({'status': 'Reprovado'})
