@@ -50,6 +50,7 @@ Após isso, sua API estará rodando localmente na sua máquina.
 <p align="justify">
 Para armazenar as informações utilizadas no aplicativo como informações dos usuários, dos treinamentos, das vagas de emprego e etc, nós optamos por utilizar um banco de dados relacional, utilizando o MySQL. 
 </p>
+<br>
 
 <div align="center">
     <img src="https://www.iped.com.br/img/cursos/56207.jpg" width="300">
@@ -62,6 +63,7 @@ Para manter nosso database online para os colaboradores utilizarem, nós optamos
 
 - [railway.app](https://railway.app/)
 
+<br>
 <div align="center">
     <img src="https://cdn.sanity.io/images/22xmfoma/production/863b7805315dbe095c86ffdf17809b644c8bf304-3733x1024.png" width="400">
 </div>
