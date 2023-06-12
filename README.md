@@ -7,7 +7,7 @@
 <br>
 
 <div align="center">
-    <img src="https://i.morioh.com/2019/11/21/34f9bcbd043d.jpg" width="300">
+    <img src="https://i.morioh.com/2019/11/21/34f9bcbd043d.jpg" width="400">
 </div>
 <br>
 <br>
