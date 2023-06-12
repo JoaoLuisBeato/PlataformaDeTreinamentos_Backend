@@ -6,7 +6,7 @@
 <p align="justify">Para a construção do backend, optamos por fazer uma <b>API utilizando Flask</b>, onde essa API recebe os todos parâmetros que são enviados do do no nosso frontend. É no bakcend que realizamos todos o processo de tratamento de dados, manipulamos as informações necessárias e enviamos e recebemos informações do Banco de dados.</p>
 <br>
 
-<div style="text-align: center;">
+<div align="center">
     <img src="https://i.morioh.com/2019/11/21/34f9bcbd043d.jpg" width="300">
 </div>
 <br>
@@ -51,7 +51,7 @@ Após isso, sua API estará rodando localmente na sua máquina.
 Para armazenar as informações utilizadas no aplicativo como informações dos usuários, dos treinamentos, das vagas de emprego e etc, nós optamos por utilizar um banco de dados relacional, utilizando o MySQL. 
 </p>
 
-<div style="text-align: center;">
+<div align="center">
     <img src="https://www.iped.com.br/img/cursos/56207.jpg" width="230">
 </div>
 
@@ -62,7 +62,7 @@ Para manter nosso database online para os colaboradores utilizarem, nós optamos
 
 - [railway.app](https://railway.app/)
 
-<div style="text-align: center;">
+<div align="center">
     <img src="https://cdn.sanity.io/images/22xmfoma/production/863b7805315dbe095c86ffdf17809b644c8bf304-3733x1024.png" width="300">
 </div>
 
