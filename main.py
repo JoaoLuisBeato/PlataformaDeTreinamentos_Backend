@@ -342,7 +342,7 @@ def Listar_inscritos_treinamento():
     #  que estão vinculados a esse treinamento
     mycursor = db.cursor()
     
-    sql_command = "SELECT nome FROM usuarios WHERE email in (SELECT email from treinamento_alunos WHERE codigo_treinamento = %s)"
+    sql_command = "SELECT email FROM usuarios WHERE email in (SELECT email from treinamento_alunos WHERE codigo_treinamento = %s)"
     values = (id_treinamento,)
     mycursor.execute(sql_command, values)
     listar_inscritos_treinamento = mycursor.fetchall()
@@ -763,7 +763,7 @@ def Listar_inscritos_vaga():
 
     # Busca na tabela, todos que tem o mesmo ID da vaga
     mycursor = db.cursor()
-    sql_command = "SELECT nome FROM usuarios WHERE email IN (SELECT email from usuario_vaga WHERE id_vaga = %s)"
+    sql_command = "SELECT email FROM usuarios WHERE email IN (SELECT email from usuario_vaga WHERE id_vaga = %s)"
     values = (id_vaga,)
     mycursor.execute(sql_command, values)
     listar_inscritos_vaga = mycursor.fetchall()
