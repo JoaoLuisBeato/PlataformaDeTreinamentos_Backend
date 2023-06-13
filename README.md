@@ -3,7 +3,7 @@
 
 <p align="justify">Aqui reside o <i>bakcend</i> do aplicativo.</p></n>
 <br>
-<p align="justify">Para a construção do backend, optamos por fazer uma <b>API utilizando Flask</b>, onde essa API recebe os todos parâmetros que são enviados do do no nosso frontend. É no bakcend que realizamos todos o processo de tratamento de dados, manipulamos as informações necessárias e enviamos e recebemos informações do Banco de dados.</p>
+<p align="justify">Para a construção do backend, optamos por fazer uma <b>API utilizando Flask</b>, onde essa API recebe todos os parâmetros que são enviados do nosso frontend. É no bakcend que realizamos todos os processos de tratamento de dados, manipulamos as informações necessárias e enviamos e recebemos informações do Banco de dados.</p>
 <br>
 
 <div align="center">
@@ -31,7 +31,7 @@ Aqui estão listados algumas das ferramentas e dos softwares necessários para o
 
 ### Installing
 
-<p align="justify">Como o repositório e o python 3 instalodos dentra da máquina abra o terminal e execute o seguinte comando:
+<p align="justify">Com o repositório e o python 3 instalados dentro da máquina, abra o terminal e execute o seguinte comando:
 
     pip install -r requirements.txt
 
